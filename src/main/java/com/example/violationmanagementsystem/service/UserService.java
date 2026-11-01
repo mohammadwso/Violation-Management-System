@@ -53,10 +53,6 @@ public class UserService {
         return new LoginResponse(token, "Bearer", jwtService.getExpirationSeconds());
     }
 
-    public List<User> getAllUsers() {
-        return this.userRepo.findAll();
-    }
-
     @Transactional(readOnly = true)
     public Page<UserResponse> getAllUsers(Pageable pageable) {
         return userRepo.findAll(pageable).map(UserResponse::from);
@@ -69,7 +65,7 @@ public class UserService {
 
         String username = userRequest.username().trim();
         String email = userRequest.email().trim().toLowerCase();
-        String nationalId = userRequest.email().trim().toLowerCase();
+        String nationalId = userRequest.nationalId().trim();
 
         if (userRepo.existsByUsername(username))
             throw new ConflictException("username already taken");

@@ -30,11 +30,9 @@ public class UserController {
 
     @PostMapping("/login")
     public LoginResponse login(@Valid @RequestBody LoginRequest loginRequest) {
-        System.out.println(loginRequest.username());
         return userService.login(loginRequest);
     }
 
-    //    TODO: change into admin
     @GetMapping("/users")
     @PreAuthorize("hasAnyRole('SYSTEM_ADMIN','ADMIN')")
     public Page<UserResponse> getUsers(@PageableDefault(size = 20) Pageable pageable) {
@@ -42,7 +40,7 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('SYSTEM_ADMIN','ADMIN')")
     public AddUserResponse addUser(@Valid @RequestBody AddUserRequest userRequest,
                                    @AuthenticationPrincipal AppUserDetails principal) {
         User currentUser = userService.findByUsername(principal.getUsername())
