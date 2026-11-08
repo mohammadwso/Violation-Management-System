@@ -1,0 +1,33 @@
+databaseChangeLog:
+  - changeSet:
+      id: 018-load-ref-status
+      author: mohammadwso
+      changes:
+        - insert:
+            tableName: ref_status
+            columns:
+              - column: { name: id,   valueNumeric: 1 }
+              - column: { name: code, value: NEW }
+              - column: { name: name_en,     value: New }
+              - column: { name: name_ar,     value: جديدة }
+        - insert:
+            tableName: ref_status
+            columns:
+              - column: { name: id,   valueNumeric: 2 }
+              - column: { name: code, value: ASSIGNED }
+              - column: { name: name_en,     value: Assigned }
+              - column: { name: name_ar,     value: مسندة }
+        - insert:
+            tableName: ref_status
+            columns:
+              - column: { name: id,   valueNumeric: 3 }
+              - column: { name: code, value: APPROVED }
+              - column: { name: name_en,     value: Approved }
+              - column: { name: name_ar,     value: مقبولة }
+        - insert:
+            tableName: ref_status
+            columns:
+              - column: { name: id,   valueNumeric: 4 }
+              - column: { name: code, value: REJECTED }
+              - column: { name: name_en,     value: Rejected }
+              - column: { name: name_ar,     value: مرفوضة }

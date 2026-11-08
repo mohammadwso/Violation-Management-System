@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      author: MohammadWS
+      author: mohammadwso
       id: 004-create-roles-table
       preConditions:
         - onFail: MARK_RAN

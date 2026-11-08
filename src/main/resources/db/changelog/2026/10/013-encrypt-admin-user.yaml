@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      author: MohammadWS
+      author: mohammadwso
       id: 013-encrypt-admin-user
       preConditions:
         - onFail: MARK_RAN

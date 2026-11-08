@@ -1,0 +1,64 @@
+databaseChangeLog:
+  - changeSet:
+      id: 015-create-ref-region
+      author: mohammadwso
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: ref_region
+      changes:
+        - createTable:
+            tableName: ref_region
+            remarks: KSA administrative regions (ISO 3166-2:SA)
+            columns:
+              - column:
+                  name: region_id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_ref_region
+                    nullable: false
+              - column:
+                  name: region_code
+                  type: VARCHAR(10)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uq_ref_region_code
+              - column:
+                  name: name_en
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name_ar
+                  type: NVARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sort_order
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_active
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+      rollback:
+        - dropTable:
+            tableName: ref_region

@@ -1,0 +1,33 @@
+databaseChangeLog:
+  - changeSet:
+      id: 020-load-ref-violation-type
+      author: mohammadwso
+      changes:
+        - insert:
+            tableName: ref_violation_type
+            columns:
+              - column: { name: id,   valueNumeric: 1 }
+              - column: { name: code, value: BELT }
+              - column: { name: name_en,     value: Belt violation }
+              - column: { name: name_ar,     value: مخالفة حزام }
+        - insert:
+            tableName: ref_violation_type
+            columns:
+              - column: { name: id,   valueNumeric: 2 }
+              - column: { name: code, value: SPEED }
+              - column: { name: name_en,     value: Speed Violation }
+              - column: { name: name_ar,     value: مخالفة سرعة }
+        - insert:
+            tableName: ref_violation_type
+            columns:
+              - column: { name: id,   valueNumeric: 3 }
+              - column: { name: code, value: MOBILE }
+              - column: { name: name_en,     value: Mobile violation }
+              - column: { name: name_ar,     value: مخالفة جوال }
+        - insert:
+            tableName: ref_violation_type
+            columns:
+              - column: { name: id,   valueNumeric: 4 }
+              - column: { name: code, value: LANE }
+              - column: { name: name_en,     value: Lane violation }
+              - column: { name: name_ar,     value: مخالفة المسار }

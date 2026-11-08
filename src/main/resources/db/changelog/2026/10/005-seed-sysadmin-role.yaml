@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      author: MohammadWS
+      author: mohammadwso
       id: 005-seed-sysadmin-role
       preConditions:
         - onFail: MARK_RAN

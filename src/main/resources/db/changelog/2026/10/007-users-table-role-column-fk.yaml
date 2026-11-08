@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      author: MohammadWS
+      author: mohammadwso
       id: 007-users-table-role-column-fk
       preConditions:
         - onFail: MARK_RAN

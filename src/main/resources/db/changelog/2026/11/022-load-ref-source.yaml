@@ -1,0 +1,30 @@
+databaseChangeLog:
+  - changeSet:
+      id: 022-load-ref-source
+      author: mohammadwso
+      changes:
+        - insert:
+            tableName: ref_source
+            columns:
+              - column: { name: id,      valueNumeric: 1 }
+              - column: { name: code,    value: VIM }
+              - column: { name: name_en, value: VIM }
+              - column: { name: name_ar, value: نظام VIM }
+        - insert:
+            tableName: ref_source
+            columns:
+              - column: { name: id,      valueNumeric: 2 }
+              - column: { name: code,    value: CCTV }
+              - column: { name: name_en, value: CCTV }
+              - column: { name: name_ar, value: كاميرات المراقبة }
+        - insert:
+            tableName: ref_source
+            columns:
+              - column: { name: id,      valueNumeric: 3 }
+              - column: { name: code,    value: MANUAL }
+              - column: { name: name_en, value: Manual }
+              - column: { name: name_ar, value: يدوي }
+      rollback:
+        - delete:
+            tableName: ref_source
+            where: id IN (1, 2, 3)

@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      author: MohammadWS
+      author: mohammadwso
       id: 006-users-table-add-role-column
       preConditions:
         - onFail: MARK_RAN

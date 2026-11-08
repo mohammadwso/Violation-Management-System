@@ -1,0 +1,117 @@
+databaseChangeLog:
+  - changeSet:
+      id: 016-load-ref-region
+      author: mohammadwso
+      changes:
+        - insert:
+            tableName: ref_region
+            columns:
+              - column: { name: region_id,   valueNumeric: 0 }
+              - column: { name: region_code, value: UNK }
+              - column: { name: name_en,     value: Unknown }
+              - column: { name: name_ar,     value: غير معروف }
+              - column: { name: sort_order,  valueNumeric: 0 }
+        - insert:
+            tableName: ref_region
+            columns:
+              - column: { name: region_id,   valueNumeric: 1 }
+              - column: { name: region_code, value: SA-01 }
+              - column: { name: name_en,     value: Riyadh }
+              - column: { name: name_ar,     value: الرياض }
+              - column: { name: sort_order,  valueNumeric: 1 }
+        - insert:
+            tableName: ref_region
+            columns:
+              - column: { name: region_id,   valueNumeric: 2 }
+              - column: { name: region_code, value: SA-02 }
+              - column: { name: name_en,     value: Makkah }
+              - column: { name: name_ar,     value: مكة المكرمة }
+              - column: { name: sort_order,  valueNumeric: 2 }
+        - insert:
+            tableName: ref_region
+            columns:
+              - column: { name: region_id,   valueNumeric: 3 }
+              - column: { name: region_code, value: SA-03 }
+              - column: { name: name_en,     value: Madinah }
+              - column: { name: name_ar,     value: المدينة المنورة }
+              - column: { name: sort_order,  valueNumeric: 3 }
+        - insert:
+            tableName: ref_region
+            columns:
+              - column: { name: region_id,   valueNumeric: 4 }
+              - column: { name: region_code, value: SA-04 }
+              - column: { name: name_en,     value: Eastern Province }
+              - column: { name: name_ar,     value: المنطقة الشرقية }
+              - column: { name: sort_order,  valueNumeric: 4 }
+        - insert:
+            tableName: ref_region
+            columns:
+              - column: { name: region_id,   valueNumeric: 5 }
+              - column: { name: region_code, value: SA-05 }
+              - column: { name: name_en,     value: Al-Qassim }
+              - column: { name: name_ar,     value: القصيم }
+              - column: { name: sort_order,  valueNumeric: 5 }
+        - insert:
+            tableName: ref_region
+            columns:
+              - column: { name: region_id,   valueNumeric: 6 }
+              - column: { name: region_code, value: SA-06 }
+              - column: { name: name_en,     value: Ha'il }
+              - column: { name: name_ar,     value: حائل }
+              - column: { name: sort_order,  valueNumeric: 6 }
+        - insert:
+            tableName: ref_region
+            columns:
+              - column: { name: region_id,   valueNumeric: 7 }
+              - column: { name: region_code, value: SA-07 }
+              - column: { name: name_en,     value: Tabuk }
+              - column: { name: name_ar,     value: تبوك }
+              - column: { name: sort_order,  valueNumeric: 7 }
+        - insert:
+            tableName: ref_region
+            columns:
+              - column: { name: region_id,   valueNumeric: 8 }
+              - column: { name: region_code, value: SA-08 }
+              - column: { name: name_en,     value: Northern Borders }
+              - column: { name: name_ar,     value: الحدود الشمالية }
+              - column: { name: sort_order,  valueNumeric: 8 }
+        - insert:
+            tableName: ref_region
+            columns:
+              - column: { name: region_id,   valueNumeric: 9 }
+              - column: { name: region_code, value: SA-09 }
+              - column: { name: name_en,     value: Jazan }
+              - column: { name: name_ar,     value: جازان }
+              - column: { name: sort_order,  valueNumeric: 9 }
+        - insert:
+            tableName: ref_region
+            columns:
+              - column: { name: region_id,   valueNumeric: 10 }
+              - column: { name: region_code, value: SA-10 }
+              - column: { name: name_en,     value: Najran }
+              - column: { name: name_ar,     value: نجران }
+              - column: { name: sort_order,  valueNumeric: 10 }
+        - insert:
+            tableName: ref_region
+            columns:
+              - column: { name: region_id,   valueNumeric: 11 }
+              - column: { name: region_code, value: SA-11 }
+              - column: { name: name_en,     value: Al-Bahah }
+              - column: { name: name_ar,     value: الباحة }
+              - column: { name: sort_order,  valueNumeric: 11 }
+        - insert:
+            tableName: ref_region
+            columns:
+              - column: { name: region_id,   valueNumeric: 12 }
+              - column: { name: region_code, value: SA-12 }
+              - column: { name: name_en,     value: Al-Jawf }
+              - column: { name: name_ar,     value: الجوف }
+              - column: { name: sort_order,  valueNumeric: 12 }
+        - insert:
+            tableName: ref_region
+            columns:
+              - column: { name: region_id,   valueNumeric: 14 }
+              - column: { name: region_code, value: SA-14 }
+              - column: { name: name_en,     value: Asir }
+              - column: { name: name_ar,     value: عسير }
+              - column: { name: sort_order,  valueNumeric: 14 }

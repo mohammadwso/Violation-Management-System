@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      author: MohammadWS
+      author: mohammadwso
       id: 014-assign-admin-role
       preConditions:
         - onFail: MARK_RAN

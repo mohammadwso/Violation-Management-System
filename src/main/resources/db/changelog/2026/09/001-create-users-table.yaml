@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      author: MohammadWS
+      author: mohammadwso
       id: 001-create-users-table
       preConditions:
         - onFail: MARK_RAN

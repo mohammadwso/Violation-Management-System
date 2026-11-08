@@ -1,0 +1,147 @@
+databaseChangeLog:
+  - changeSet:
+      author: mohammadwso
+      id: 023-create-violations-table
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: violations
+      changes:
+        - createTable:
+            tableName: violations
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: source_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: latitude
+                  type: DECIMAL(10,7)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: longitude
+                  type: DECIMAL(10,7)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: region_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: plate_number
+                  type: NVARCHAR(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: violator_id
+                  type: VARCHAR(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: violation_type_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: violation_image_key
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: violation_date
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            constraintName: fk_violations_source
+            baseTableName: violations
+            baseColumnNames: source_id
+            referencedTableName: ref_source
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            constraintName: fk_violations_status
+            baseTableName: violations
+            baseColumnNames: status_id
+            referencedTableName: ref_status
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            constraintName: fk_violations_region
+            baseTableName: violations
+            baseColumnNames: region_id
+            referencedTableName: ref_region
+            referencedColumnNames: region_id
+        - addForeignKeyConstraint:
+            constraintName: fk_violations_violation_type
+            baseTableName: violations
+            baseColumnNames: violation_type_id
+            referencedTableName: ref_violation_type
+            referencedColumnNames: id
+        - createIndex:
+            indexName: idx_violations_source
+            tableName: violations
+            columns:
+              - column:
+                  name: source_id
+        - createIndex:
+            indexName: idx_violations_status_violation_date
+            tableName: violations
+            columns:
+              - column: { name: status_id }
+              - column: { name: violation_date, descending: true }
+        - createIndex:
+            indexName: idx_violations_violation_date
+            tableName: violations
+            columns:
+              - column: { name: violation_date, descending: true }
+        - createIndex:
+            indexName: idx_violations_region
+            tableName: violations
+            columns:
+              - column: { name: region_id }
+        - createIndex:
+            indexName: idx_violations_type
+            tableName: violations
+            columns:
+              - column: { name: violation_type_id }
+        - createIndex:
+            indexName: idx_violations_plate
+            tableName: violations
+            columns:
+              - column: { name: plate_number }
+        - createIndex:
+            indexName: idx_violations_violator
+            tableName: violations
+            columns:
+              - column: { name: violator_id }
+      rollback:
+        - dropTable:
+            tableName: violations

@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      author: MohammadWS
+      author: mohammadwso
       id: 011-seed-role-operator
       preConditions:
         - onFail: MARK_RAN
