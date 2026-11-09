@@ -1,0 +1,45 @@
+databaseChangeLog:
+  - changeSet:
+      id: 029-create-violations-manual-table
+      author: mohammadwso
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: violations_manual
+      changes:
+        - createTable:
+            tableName: violations_manual
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: inspector_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            constraintName: fk_violations_manual_id
+            baseTableName: violations_manual
+            baseColumnNames: id
+            referencedTableName: violations
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            constraintName: fk_violations_manual_inspector
+            baseTableName: violations_manual
+            baseColumnNames: inspector_id
+            referencedTableName: users
+            referencedColumnNames: id
+        - createIndex:
+            indexName: idx_violations_manual_inspector
+            tableName: violations_manual
+            columns:
+              - column: { name: inspector_id }
+      rollback:
+        - dropTable:
+            tableName: violations_manual

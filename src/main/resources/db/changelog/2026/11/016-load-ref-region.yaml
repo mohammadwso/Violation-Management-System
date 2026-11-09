@@ -115,3 +115,7 @@ databaseChangeLog:
               - column: { name: name_en,     value: Asir }
               - column: { name: name_ar,     value: عسير }
               - column: { name: sort_order,  valueNumeric: 14 }
+      rollback:
+        - delete:
+            tableName: ref_region
+            where: region_id IN (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14)

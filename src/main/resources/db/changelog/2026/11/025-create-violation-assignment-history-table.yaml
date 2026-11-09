@@ -1,0 +1,85 @@
+databaseChangeLog:
+  - changeSet:
+      id: 025-create-violation-assignment-history-table
+      author: mohammadwso
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: violation_assignment_history
+      changes:
+        - createTable:
+            tableName: violation_assignment_history
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: violation_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: operator_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: assigned_at
+                  type: DATETIME2
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ended_at
+                  type: DATETIME2
+              - column:
+                  name: outcome
+                  type: VARCHAR(20)
+              - column:
+                  name: created_at
+                  type: DATETIME2
+                  defaultValueComputed: SYSUTCDATETIME()
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            constraintName: fk_violation_assignment_history_violation
+            baseTableName: violation_assignment_history
+            baseColumnNames: violation_id
+            referencedTableName: violations
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            constraintName: fk_violation_assignment_history_operator
+            baseTableName: violation_assignment_history
+            baseColumnNames: operator_id
+            referencedTableName: users
+            referencedColumnNames: id
+        - sql:
+            sql: >
+              ALTER TABLE violation_assignment_history
+              ADD CONSTRAINT ck_violation_assignment_history_outcome
+              CHECK (outcome IN ('APPROVED', 'REJECTED', 'EXPIRED'))
+        - sql:
+            sql: >
+              ALTER TABLE violation_assignment_history
+              ADD CONSTRAINT ck_violation_assignment_history_ended
+              CHECK ((ended_at IS NULL AND outcome IS NULL)
+                  OR (ended_at IS NOT NULL AND outcome IS NOT NULL))
+        - createIndex:
+            indexName: idx_violation_assignment_history_violation
+            tableName: violation_assignment_history
+            columns:
+              - column: { name: violation_id }
+        - createIndex:
+            indexName: idx_violation_assignment_history_operator_outcome
+            tableName: violation_assignment_history
+            columns:
+              - column: { name: operator_id }
+              - column: { name: outcome }
+      rollback:
+        - dropTable:
+            tableName: violation_assignment_history

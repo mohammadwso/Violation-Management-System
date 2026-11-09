@@ -30,7 +30,19 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: violation_note
-                  type: VARCHAR(200)
+                  type: NVARCHAR(1000)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATETIME2
+                  defaultValueComputed: SYSUTCDATETIME()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: DATETIME2
+                  defaultValueComputed: SYSUTCDATETIME()
                   constraints:
                     nullable: false
         - addForeignKeyConstraint:

@@ -31,3 +31,7 @@ databaseChangeLog:
               - column: { name: code, value: REJECTED }
               - column: { name: name_en,     value: Rejected }
               - column: { name: name_ar,     value: مرفوضة }
+      rollback:
+        - delete:
+            tableName: ref_status
+            where: id IN (1, 2, 3, 4)

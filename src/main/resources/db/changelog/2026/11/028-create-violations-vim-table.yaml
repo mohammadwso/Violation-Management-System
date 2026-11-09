@@ -1,0 +1,39 @@
+databaseChangeLog:
+  - changeSet:
+      id: 028-create-violations-vim-table
+      author: mohammadwso
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: violations_vim
+      changes:
+        - createTable:
+            tableName: violations_vim
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: vehicle_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            constraintName: fk_violations_vim_id
+            baseTableName: violations_vim
+            baseColumnNames: id
+            referencedTableName: violations
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - createIndex:
+            indexName: idx_violations_vim_vehicle
+            tableName: violations_vim
+            columns:
+              - column: { name: vehicle_id }
+      rollback:
+        - dropTable:
+            tableName: violations_vim

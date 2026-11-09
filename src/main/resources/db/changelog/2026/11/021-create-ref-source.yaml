@@ -10,7 +10,6 @@ databaseChangeLog:
       changes:
         - createTable:
             tableName: ref_source
-            remarks: Origin of a violation record (VIM, CCTV, manual inspection)
             columns:
               - column:
                   name: id
@@ -41,14 +40,14 @@ databaseChangeLog:
                     uniqueConstraintName: uq_ref_source_name_en
               - column:
                   name: created_at
-                  type: TIMESTAMP
-                  defaultValueComputed: CURRENT_TIMESTAMP
+                  type: DATETIME2
+                  defaultValueComputed: SYSUTCDATETIME()
                   constraints:
                     nullable: false
               - column:
                   name: updated_at
-                  type: TIMESTAMP
-                  defaultValueComputed: CURRENT_TIMESTAMP
+                  type: DATETIME2
+                  defaultValueComputed: SYSUTCDATETIME()
                   constraints:
                     nullable: false
       rollback:

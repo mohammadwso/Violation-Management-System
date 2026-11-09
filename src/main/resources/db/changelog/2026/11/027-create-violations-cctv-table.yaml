@@ -1,0 +1,39 @@
+databaseChangeLog:
+  - changeSet:
+      id: 027-create-violations-cctv-table
+      author: mohammadwso
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: violations_cctv
+      changes:
+        - createTable:
+            tableName: violations_cctv
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: camera_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            constraintName: fk_violations_cctv_id
+            baseTableName: violations_cctv
+            baseColumnNames: id
+            referencedTableName: violations
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - createIndex:
+            indexName: idx_violations_cctv_camera
+            tableName: violations_cctv
+            columns:
+              - column: { name: camera_id }
+      rollback:
+        - dropTable:
+            tableName: violations_cctv

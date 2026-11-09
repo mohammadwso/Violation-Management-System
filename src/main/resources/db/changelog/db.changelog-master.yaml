@@ -27,3 +27,33 @@ databaseChangeLog:
       file: db/changelog/2026/10/013-encrypt-admin-user.yaml
   - include:
       file: db/changelog/2026/10/014-assing-admin-role.yaml
+  - include:
+      file: db/changelog/2026/11/015-create-ref-region.yaml
+  - include:
+      file: db/changelog/2026/11/016-load-ref-region.yaml
+  - include:
+      file: db/changelog/2026/11/017-create-ref-status.yaml
+  - include:
+      file: db/changelog/2026/11/018-load-ref-status.yaml
+  - include:
+      file: db/changelog/2026/11/019-create-ref-violation-type.yaml
+  - include:
+      file: db/changelog/2026/11/020-load-ref-violation-type.yaml
+  - include:
+      file: db/changelog/2026/11/021-create-ref-source.yaml
+  - include:
+      file: db/changelog/2026/11/022-load-ref-source.yaml
+  - include:
+      file: db/changelog/2026/11/023-create-violations-table.yaml
+  - include:
+      file: db/changelog/2026/11/024-create-violations-notes-table.yaml
+  - include:
+      file: db/changelog/2026/11/025-create-violation-assignment-history-table.yaml
+  - include:
+      file: db/changelog/2026/11/026-utc-defaults-users-roles.yaml
+  - include:
+      file: db/changelog/2026/11/027-create-violations-cctv-table.yaml
+  - include:
+      file: db/changelog/2026/11/028-create-violations-vim-table.yaml
+  - include:
+      file: db/changelog/2026/11/029-create-violations-manual-table.yaml

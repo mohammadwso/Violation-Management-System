@@ -31,3 +31,7 @@ databaseChangeLog:
               - column: { name: code, value: LANE }
               - column: { name: name_en,     value: Lane violation }
               - column: { name: name_ar,     value: مخالفة المسار }
+      rollback:
+        - delete:
+            tableName: ref_violation_type
+            where: id IN (1, 2, 3, 4)

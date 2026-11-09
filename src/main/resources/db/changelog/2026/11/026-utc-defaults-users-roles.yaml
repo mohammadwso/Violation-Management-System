@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: 026-utc-defaults-users-roles
+      author: mohammadwso
+      comment: Switch created_at/updated_at defaults on users and roles from GETDATE() (server local time) to SYSUTCDATETIME()
+      changes:
+        - dropDefaultValue: { tableName: users, columnName: created_at }
+        - addDefaultValue:  { tableName: users, columnName: created_at, defaultValueComputed: SYSUTCDATETIME() }
+        - dropDefaultValue: { tableName: users, columnName: updated_at }
+        - addDefaultValue:  { tableName: users, columnName: updated_at, defaultValueComputed: SYSUTCDATETIME() }
+        - dropDefaultValue: { tableName: roles, columnName: created_at }
+        - addDefaultValue:  { tableName: roles, columnName: created_at, defaultValueComputed: SYSUTCDATETIME() }
+        - dropDefaultValue: { tableName: roles, columnName: updated_at }
+        - addDefaultValue:  { tableName: roles, columnName: updated_at, defaultValueComputed: SYSUTCDATETIME() }
+      rollback:
+        - dropDefaultValue: { tableName: users, columnName: created_at }
+        - addDefaultValue:  { tableName: users, columnName: created_at, defaultValueComputed: GETDATE() }
+        - dropDefaultValue: { tableName: users, columnName: updated_at }
+        - addDefaultValue:  { tableName: users, columnName: updated_at, defaultValueComputed: GETDATE() }
+        - dropDefaultValue: { tableName: roles, columnName: created_at }
+        - addDefaultValue:  { tableName: roles, columnName: created_at, defaultValueComputed: GETDATE() }
+        - dropDefaultValue: { tableName: roles, columnName: updated_at }
+        - addDefaultValue:  { tableName: roles, columnName: updated_at, defaultValueComputed: GETDATE() }

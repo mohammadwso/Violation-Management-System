@@ -29,6 +29,15 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: assigned_operator_id
+                  type: BIGINT
+              - column:
+                  name: assigned_at
+                  type: DATETIME2
+              - column:
+                  name: decided_at
+                  type: DATETIME2
+              - column:
                   name: latitude
                   type: DECIMAL(10,7)
                   constraints:
@@ -45,7 +54,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: plate_number
-                  type: NVARCHAR(10)
+                  type: NVARCHAR(20)
                   constraints:
                     nullable: false
               - column:
@@ -66,19 +75,19 @@ databaseChangeLog:
 
               - column:
                   name: violation_date
-                  type: TIMESTAMP
+                  type: DATETIME2
                   constraints:
                     nullable: false
               - column:
                   name: created_at
-                  type: TIMESTAMP
-                  defaultValueComputed: CURRENT_TIMESTAMP
+                  type: DATETIME2
+                  defaultValueComputed: SYSUTCDATETIME()
                   constraints:
                     nullable: false
               - column:
                   name: updated_at
-                  type: TIMESTAMP
-                  defaultValueComputed: CURRENT_TIMESTAMP
+                  type: DATETIME2
+                  defaultValueComputed: SYSUTCDATETIME()
                   constraints:
                     nullable: false
         - addForeignKeyConstraint:
@@ -86,6 +95,12 @@ databaseChangeLog:
             baseTableName: violations
             baseColumnNames: source_id
             referencedTableName: ref_source
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            constraintName: fk_violations_assigned_operator
+            baseTableName: violations
+            baseColumnNames: assigned_operator_id
+            referencedTableName: users
             referencedColumnNames: id
         - addForeignKeyConstraint:
             constraintName: fk_violations_status
@@ -121,7 +136,19 @@ databaseChangeLog:
             indexName: idx_violations_violation_date
             tableName: violations
             columns:
-              - column: { name: violation_date, descending: true }
+              - column: { name: violation_date }
+        - createIndex:
+            indexName: idx_violations_operator_status
+            tableName: violations
+            columns:
+              - column: { name: assigned_operator_id }
+              - column: { name: status_id }
+        - createIndex:
+            indexName: idx_violations_status_assigned_at
+            tableName: violations
+            columns:
+              - column: { name: status_id }
+              - column: { name: assigned_at }
         - createIndex:
             indexName: idx_violations_region
             tableName: violations

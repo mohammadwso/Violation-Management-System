@@ -40,14 +40,14 @@ databaseChangeLog:
                     uniqueConstraintName: uq_ref_violation_type_name_en
               - column:
                   name: created_at
-                  type: TIMESTAMP
-                  defaultValueComputed: CURRENT_TIMESTAMP
+                  type: DATETIME2
+                  defaultValueComputed: SYSUTCDATETIME()
                   constraints:
                     nullable: false
               - column:
                   name: updated_at
-                  type: TIMESTAMP
-                  defaultValueComputed: CURRENT_TIMESTAMP
+                  type: DATETIME2
+                  defaultValueComputed: SYSUTCDATETIME()
                   constraints:
                     nullable: false
       rollback:
