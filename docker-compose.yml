@@ -26,6 +26,38 @@ services:
       /opt/mssql-tools/bin/sqlcmd -C -S sqlserver -U sa -P "vms-mssql-PWD!"
       -Q "IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'vmsdb') CREATE DATABASE vmsdb"
 
+  minio:
+    image: pgsty/minio:latest
+    container_name: minio-vms
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: "vms-minio"
+      MINIO_ROOT_PASSWORD: "vms-minio-PWD!"
+    ports:
+      - "12003:9000"   # S3 API (the app talks to this)
+      - "12004:9001"   # Web console (http://localhost:12004)
+    volumes:
+      - minio-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "mc", "ready", "local" ]
+      interval: 5s
+      retries: 10
+
+  init-minio:
+    image: pgsty/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 vms-minio 'vms-minio-PWD!' &&
+      mc mb --ignore-existing local/violations &&
+      mc anonymous set none local/violations &&
+      mc ilm rule ls local/violations | grep -q staging/ ||
+      mc ilm rule add --prefix staging/ --expire-days 1 local/violations
+      "
+
 #   app:
 #    build: .
 #    ports:
@@ -37,3 +69,4 @@ services:
 #      SPRING_PROFILES_ACTIVE: docker
 volumes:
   sqlserver-data:
+  minio-data:
