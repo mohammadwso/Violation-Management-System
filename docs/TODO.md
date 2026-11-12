@@ -33,6 +33,10 @@
 ### Reading
 - [ ] `GET /violations/{id}/images/{imageId}`: stream the image through the API
 
+### Cross-cutting
+- [ ] General API response wrapper for all endpoints (success + error in one shape)
+- [ ] Logging AOP: aspect that logs method calls (args, result/exception, duration) for controllers/services
+
 ### Cleanup
 - [ ] Move secrets (DB password, JWT secret, MinIO keys) out of committed properties into `.env` or environment variables
 - [ ] README: users table, running commands
