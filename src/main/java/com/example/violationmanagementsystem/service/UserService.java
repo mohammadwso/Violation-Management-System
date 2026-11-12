@@ -83,6 +83,8 @@ public class UserService {
                 userRequest.email()
         );
         user.setRole(newRole);
+        user.setEnabled(true);
+        user.setAccountNonLocked(true);
 
         User savedUser;
         try {

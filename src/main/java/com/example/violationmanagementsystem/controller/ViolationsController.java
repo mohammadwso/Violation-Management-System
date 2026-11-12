@@ -6,12 +6,15 @@ import com.example.violationmanagementsystem.security.AppUserDetails;
 import com.example.violationmanagementsystem.service.ViolationService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-@Controller
+import java.io.IOException;
+
+@RestController
 @RequestMapping("/violations")
 public class ViolationsController {
 
@@ -19,7 +22,11 @@ public class ViolationsController {
     ViolationService violationService;
 
     @PostMapping("/images")
-    public ViolationImageResponse uploadViolationImage(@Valid ViolationImageRequest request, @AuthenticationPrincipal AppUserDetails userDetails) {
-        return violationService.storeImage(request, userDetails);
+    @ResponseStatus(HttpStatus.CREATED)
+    public ViolationImageResponse uploadViolationImage(
+            @RequestParam("image") ViolationImageRequest request,
+            @AuthenticationPrincipal AppUserDetails userDetails
+    ) throws IOException {
+        return violationService.storeImage(request.image(), userDetails);
     }
 }

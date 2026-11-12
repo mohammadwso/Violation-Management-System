@@ -1,14 +1,16 @@
 package com.example.violationmanagementsystem.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 @Service
 public interface StorageService {
 
     // setting
-    public String upload(String imageKey, InputStream image, Long size, String contentType);
+    public String upload(String imageKey, MultipartFile image, Long size, String contentType) throws IOException;
 
     public boolean exists(String imageKey);
 
