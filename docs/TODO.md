@@ -34,7 +34,7 @@
 - [ ] `GET /violations/{id}/images/{imageId}`: stream the image through the API
 
 ### Cross-cutting
-- [ ] General API response wrapper for all endpoints (success + error in one shape)
+- [ ] Wrap all responses: success in `ApiResponse`, errors in `ErrorResponse` (every endpoint + exception handler)
 - [ ] Logging AOP: aspect that logs method calls (args, result/exception, duration) for controllers/services
 
 ### Cleanup

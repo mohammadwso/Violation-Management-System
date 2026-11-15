@@ -26,17 +26,20 @@ public class S3StorageService implements StorageService {
         PutObjectRequest objectRequest = PutObjectRequest.builder()
                 .bucket(storageProperties.bucket())
                 .key(imageKey)
-//                .contentType(contentType)
-//                .contentLength(size)
+                .contentType(contentType)
+                .contentLength(size)
                 .build();
+
         PutObjectResponse response = s3Client.putObject(objectRequest, RequestBody.fromBytes(image.getBytes()));
+        // If the upload failed it would throw an error
         System.out.println(response);
         return imageKey;
     }
 
     @Override
     public boolean exists(String imageKey) {
-        return false;
+        // TODO: implement with s3Client.headObject; return false on NoSuchKeyException
+        return true;
     }
 
     @Override

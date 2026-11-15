@@ -113,7 +113,7 @@ databaseChangeLog:
             baseTableName: violations
             baseColumnNames: region_id
             referencedTableName: ref_region
-            referencedColumnNames: region_id
+            referencedColumnNames: id
         - addForeignKeyConstraint:
             constraintName: fk_violations_violation_type
             baseTableName: violations

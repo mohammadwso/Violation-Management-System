@@ -1,6 +1,8 @@
 package com.example.violationmanagementsystem.controller;
 
+import com.example.violationmanagementsystem.dto.request.CreateViolationRequest;
 import com.example.violationmanagementsystem.dto.request.ViolationImageRequest;
+import com.example.violationmanagementsystem.dto.response.CreateViolationResponse;
 import com.example.violationmanagementsystem.dto.response.ViolationImageResponse;
 import com.example.violationmanagementsystem.security.AppUserDetails;
 import com.example.violationmanagementsystem.service.ViolationService;
@@ -24,9 +26,18 @@ public class ViolationsController {
     @PostMapping("/images")
     @ResponseStatus(HttpStatus.CREATED)
     public ViolationImageResponse uploadViolationImage(
-            @RequestParam("image") ViolationImageRequest request,
+            @Valid @ModelAttribute ViolationImageRequest request,
             @AuthenticationPrincipal AppUserDetails userDetails
     ) throws IOException {
         return violationService.storeImage(request.image(), userDetails);
+    }
+
+    @PostMapping("")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CreateViolationResponse createViolation(
+            @RequestBody CreateViolationRequest request,
+            @AuthenticationPrincipal AppUserDetails userDetails
+    ) {
+        return violationService.createViolation(request, userDetails);
     }
 }
