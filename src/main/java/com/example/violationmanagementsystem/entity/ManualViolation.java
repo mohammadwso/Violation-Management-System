@@ -22,8 +22,8 @@ public class ManualViolation extends Violation {
         this.inspector = inspector;
     }
 
-    public ManualViolation(Float latitude, Float longitude, String plateNumber, String violatorId, String violationImageKey, Date violationDate, ViolationType violationType, Region region, Status status, Source source, User inspector) {
-        super(latitude, longitude, plateNumber, violatorId, violationImageKey, violationDate, violationType, region, status, source);
+    public ManualViolation(Float latitude, Float longitude, String plateNumber, String violatorId, Date violationDate, ViolationType violationType, Region region, Status status, Source source, User inspector) {
+        super(latitude, longitude, plateNumber, violatorId, violationDate, violationType, region, status, source);
         this.inspector = inspector;
     }
 }

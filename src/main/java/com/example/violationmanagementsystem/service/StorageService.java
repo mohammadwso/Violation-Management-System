@@ -9,12 +9,16 @@ import java.io.InputStream;
 @Service
 public interface StorageService {
 
+    public String createStagingKey(String sourceCode);
+    public String createViolationsKey(String sourceCode);
+
     // setting
     public String upload(String imageKey, MultipartFile image, Long size, String contentType) throws IOException;
 
     public boolean exists(String imageKey);
 
-    public boolean promote(String imageKey);
+    // Updating
+    public String promote(String imageKey);
 
     // Getting
     public InputStream download(String imageKey);

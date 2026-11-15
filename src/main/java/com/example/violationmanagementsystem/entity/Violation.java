@@ -186,7 +186,6 @@ public abstract class Violation {
                      Float longitude,
                      String plateNumber,
                      String violatorId,
-                     String violationImageKey,
                      Date violationDate,
                      ViolationType violationType,
                      Region region,
@@ -197,7 +196,6 @@ public abstract class Violation {
         this.plateNumber = plateNumber;
         this.violationType = violationType;
         this.violatorId = violatorId;
-        this.violationImageKey = violationImageKey;
         this.violationDate = violationDate;
         this.region = region;
         this.status = status;

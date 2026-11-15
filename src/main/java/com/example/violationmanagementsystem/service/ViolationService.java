@@ -19,13 +19,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.Key;
 import java.util.Date;
 import java.util.UUID;
 
 @Service
 public class ViolationService {
-
-    final String staging = "/staging";
 
     @Autowired
     StorageService storageService;
@@ -49,13 +48,11 @@ public class ViolationService {
     UserRepo userRepo;
 
     @Autowired
-    private S3StorageService s3StorageService;
-    @Autowired
-    private ManualViolationRepo manualViolationRepo;
+    ManualViolationRepo manualViolationRepo;
 
     public ViolationImageResponse storeImage(MultipartFile image, AppUserDetails userDetails) throws IOException {
-        UUID uuid = UUID.randomUUID();
-        String key = staging + '/' + "manual" + "/" + uuid;
+        Source source = sourceRepo.findByCode(SourceCode.MANUAL.name()).orElseThrow(() -> new RuntimeException("error"));
+        String key = storageService.createStagingKey(source.getCode());
         boolean exists = this.storageService.exists(key);
         if (exists) {
             throw new RuntimeException("image already exists");
@@ -94,12 +91,13 @@ public class ViolationService {
 
         String imageKey = request.violationImageKey();
 
-        boolean exists = s3StorageService.exists(imageKey);
+
+        boolean exists = storageService.exists(imageKey);
         if (!exists) {
             throw new RuntimeException("image doesn't exists");
         }
 
-        s3StorageService.promote(imageKey); // after
+
 
         if (request.violationDate().after(new Date())) {
             throw new RuntimeException("invalid Date");
@@ -114,7 +112,6 @@ public class ViolationService {
                 request.longitude(),
                 request.plateNumber(),
                 request.violatorId(),
-                request.violationImageKey(),
                 request.violationDate(),
                 violationType,
                 region,
@@ -124,9 +121,10 @@ public class ViolationService {
                 );
         violation.setCreatedAt(new Date());
         violation.setUpdatedAt(new Date());
-
+        String finalKey = storageService.promote(imageKey);
+        violation.setViolationImageKey(finalKey);
         ManualViolation saved =  manualViolationRepo.save(violation);
-        System.out.println(saved);
-        return new CreateViolationResponse(true, 1L);
+
+        return new CreateViolationResponse(true, saved.getId());
     }
 }
