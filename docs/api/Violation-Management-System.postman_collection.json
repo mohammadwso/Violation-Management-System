@@ -1,0 +1,966 @@
+{
+  "info": {
+    "_postman_id": "f9de6461-8fc9-4085-b891-ac5552172e37",
+    "name": "Violation-Management-System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "52861175"
+  },
+  "item": [
+    {
+      "name": "v1 Basic Auth",
+      "item": [
+        {
+          "name": "hello world",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "password",
+                  "value": "0",
+                  "type": "string"
+                },
+                {
+                  "key": "username",
+                  "value": "m1",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{vms-spring}}/hello-world",
+              "host": [
+                "{{vms-spring}}"
+              ],
+              "path": [
+                "hello-world"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "swagger",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{vms-spring}} /v3/api-docs",
+              "host": [
+                "{{vms-spring}} "
+              ],
+              "path": [
+                "v3",
+                "api-docs"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Hello World Docker",
+          "request": {
+            "auth": {
+              "type": "basic"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{vms-spring-docker}}/hello-world",
+              "host": [
+                "{{vms-spring-docker}}"
+              ],
+              "path": [
+                "hello-world"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "register user",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "sysadmin",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "sysadmin",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\": \"mohammad\",\r\n    \"email\": \"m1111@m.com\",\r\n    \"password\":\"password\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{vms-spring}}/register",
+              "host": [
+                "{{vms-spring}}"
+              ],
+              "path": [
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "login",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"id\": 2,\r\n    \"username\": \"sysadmin\",\r\n    \"email\": \"sysadmin@mail.com\",\r\n    \"password\": \"sysadmin\",\r\n    \"enabled\": true\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{vms-spring}}/login",
+              "host": [
+                "{{vms-spring}}"
+              ],
+              "path": [
+                "login"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "v2 Token Bearer",
+      "item": [
+        {
+          "name": "hello world",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "password",
+                  "value": "0",
+                  "type": "string"
+                },
+                {
+                  "key": "username",
+                  "value": "m1",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{vms-spring}}/hello-world",
+              "host": [
+                "{{vms-spring}}"
+              ],
+              "path": [
+                "hello-world"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "swagger",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{vms-spring}} /v3/api-docs",
+              "host": [
+                "{{vms-spring}} "
+              ],
+              "path": [
+                "v3",
+                "api-docs"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Hello World Docker",
+          "request": {
+            "auth": {
+              "type": "basic"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{vms-spring-docker}}/hello-world",
+              "host": [
+                "{{vms-spring-docker}}"
+              ],
+              "path": [
+                "hello-world"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "register user",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "sysadmin",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "sysadmin",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\": \"mohammad\",\r\n    \"email\": \"m1111@m.com\",\r\n    \"password\":\"password\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{vms-spring}}/register",
+              "host": [
+                "{{vms-spring}}"
+              ],
+              "path": [
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "login sysadmin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();\r\npm.environment.set(\"jwt_token\", res.token);\r\nconsole.log(res)"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\": \"sysadmin\",\r\n    \"password\": \"sysadmin\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{vms-spring}}/login",
+              "host": [
+                "{{vms-spring}}"
+              ],
+              "path": [
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "login admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();\r\npm.environment.set(\"jwt_token\", res.token);\r\nconsole.log(res)"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\": \"admin\",\r\n    \"password\": \"admin\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{vms-spring}}/login",
+              "host": [
+                "{{vms-spring}}"
+              ],
+              "path": [
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "login test",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\": \"mohammad\",\r\n    \"password\": \"password\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{vms-spring}}/login",
+              "host": [
+                "{{vms-spring}}"
+              ],
+              "path": [
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Users",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{vms-spring}}/users",
+              "host": [
+                "{{vms-spring}}"
+              ],
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "add users",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\":\"mohammad2\",\r\n    \"password\":\"mohammad\",\r\n    \"nationalId\": 1000000003,\r\n    \"email\":\"mohammad2@mail.net\",\r\n    \"roleId\": 3\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{vms-spring}}/users",
+              "host": [
+                "{{vms-spring}}"
+              ],
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{jwt_token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "v3 Token Bearer Violations-1",
+      "item": [
+        {
+          "name": "1. login",
+          "item": [
+            {
+              "name": "login sysadmin",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const res = pm.response.json();\r\npm.environment.set(\"jwt_token\", res.token);\r\nconsole.log(res)"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"username\": \"sysadmin\",\r\n    \"password\": \"sysadmin\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{vms-spring}}/login",
+                  "host": [
+                    "{{vms-spring}}"
+                  ],
+                  "path": [
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "login inspector",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const res = pm.response.json();\r\npm.environment.set(\"jwt_token\", res.token);\r\nconsole.log(res)"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"username\": \"mohammadinspector\",\r\n    \"password\": \"mohammadinspector\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{vms-spring}}/login",
+                  "host": [
+                    "{{vms-spring}}"
+                  ],
+                  "path": [
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "login admin",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const res = pm.response.json();\r\npm.environment.set(\"jwt_token\", res.token);\r\nconsole.log(res)"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"username\": \"admin\",\r\n    \"password\": \"admin\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{vms-spring}}/login",
+                  "host": [
+                    "{{vms-spring}}"
+                  ],
+                  "path": [
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "login test",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"username\": \"mohammad\",\r\n    \"password\": \"password\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{vms-spring}}/login",
+                  "host": [
+                    "{{vms-spring}}"
+                  ],
+                  "path": [
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "2. posting image , violation",
+          "item": [
+            {
+              "name": "1. upload image",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "image",
+                      "type": "file",
+                      "src": [
+                        "/C:/Users/Moha/Pictures/put/1000 (8).png"
+                      ]
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{vms-spring}}/violations/images",
+                  "host": [
+                    "{{vms-spring}}"
+                  ],
+                  "path": [
+                    "violations",
+                    "images"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "2. create violation",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"latitude\": 24.7136,\r\n  \"longitude\": 46.6753,\r\n  \"regionId\": 1,\r\n  \"plateNumber\": \"ABC1234\",\r\n  \"violatorId\": \"1234567890\",\r\n  \"violationTypeId\": 1,\r\n  \"violationImageKey\": \"/staging/manual/57628fa8-814b-4444-a4df-49f8c6520a77\",\r\n  \"violationDate\": \"2026-11-15T10:30:00\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{vms-spring}}/violations",
+                  "host": [
+                    "{{vms-spring}}"
+                  ],
+                  "path": [
+                    "violations"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "lookup regions",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{vms-spring}}/lookup/regions",
+                  "host": [
+                    "{{vms-spring}}"
+                  ],
+                  "path": [
+                    "lookup",
+                    "regions"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "lookup violation Types",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{vms-spring}}/lookup/violation-types",
+                  "host": [
+                    "{{vms-spring}}"
+                  ],
+                  "path": [
+                    "lookup",
+                    "violation-types"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "3. violation processing",
+          "item": []
+        },
+        {
+          "name": "4. user management",
+          "item": [
+            {
+              "name": "register user",
+              "request": {
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "sysadmin",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "sysadmin",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"username\": \"mohammad\",\r\n    \"email\": \"m1111@m.com\",\r\n    \"password\":\"password\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{vms-spring}}/register",
+                  "host": [
+                    "{{vms-spring}}"
+                  ],
+                  "path": [
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Users",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{vms-spring}}/users",
+                  "host": [
+                    "{{vms-spring}}"
+                  ],
+                  "path": [
+                    "users"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "add Operator",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"username\":\"mohammad\",\r\n    \"password\":\"mohammad\",\r\n    \"nationalId\": 100000003,\r\n    \"email\":\"mohammad@mail.net\",\r\n    \"roleId\": 3\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{vms-spring}}/users",
+                  "host": [
+                    "{{vms-spring}}"
+                  ],
+                  "path": [
+                    "users"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "add Inspector",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"username\":\"mohammadinspector\",\r\n    \"password\":\"mohammadinspector\",\r\n    \"nationalId\": 1211111111,\r\n    \"email\":\"mohammadinspector@mail.net\",\r\n    \"roleId\": 4\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{vms-spring}}/users",
+                  "host": [
+                    "{{vms-spring}}"
+                  ],
+                  "path": [
+                    "users"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "hello world",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "password",
+                  "value": "0",
+                  "type": "string"
+                },
+                {
+                  "key": "username",
+                  "value": "m1",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{vms-spring}}/hello-world",
+              "host": [
+                "{{vms-spring}}"
+              ],
+              "path": [
+                "hello-world"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "swagger",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{vms-spring}} /v3/api-docs",
+              "host": [
+                "{{vms-spring}} "
+              ],
+              "path": [
+                "v3",
+                "api-docs"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Hello World Docker",
+          "request": {
+            "auth": {
+              "type": "basic"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{vms-spring-docker}}/hello-world",
+              "host": [
+                "{{vms-spring-docker}}"
+              ],
+              "path": [
+                "hello-world"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{jwt_token}}",
+            "type": "string"
+          }
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "json_web_token_0apq",
+      "secret": true
+    },
+    {
+      "key": "json_web_token_0wnr",
+      "secret": true
+    }
+  ]
+}
