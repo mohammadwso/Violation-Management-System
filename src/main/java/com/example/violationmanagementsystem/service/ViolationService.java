@@ -69,14 +69,20 @@ public class ViolationService {
                 .orElseThrow(() -> new BadRequestException("region doesn't exist"));
         ViolationType violationType = violationTypeRepo.findById(request.violationTypeId())
                 .orElseThrow(() -> new BadRequestException("region doesn't exist"));
-        Status status = statusRepo.findByCode(StatusCode.NEW.name())
-                .orElseThrow(() -> new RuntimeException("new status doesnt exists"));
+        Status status = Status.from(StatusCode.NEW);
+        // use code or change violation table fk to use code
+        System.out.println(status);
 
         Source source = sourceRepo.findByCode(SourceCode.MANUAL.name())
                 .orElseThrow(() -> new RuntimeException("manual source doesnt exists"));
 
         User user = userRepo.findUserByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("user doesnt exists"));;
+
+        if (request.violationDate().after(new Date())) {
+            throw new RuntimeException("invalid Date");
+        }
+
 
         if (request.latitude() < 15.0 || request.latitude() > 33) {
             throw new RuntimeException("latitude out of bounds");
@@ -91,21 +97,13 @@ public class ViolationService {
 
         String imageKey = request.violationImageKey();
 
-
         boolean exists = storageService.exists(imageKey);
         if (!exists) {
             throw new RuntimeException("image doesn't exists");
         }
 
-
-
-        if (request.violationDate().after(new Date())) {
-            throw new RuntimeException("invalid Date");
-        }
-
         // String plateNumber,
         // String violatorId,
-
 
         ManualViolation violation = new ManualViolation(
                 request.latitude(),

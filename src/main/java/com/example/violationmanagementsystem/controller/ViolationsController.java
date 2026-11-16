@@ -40,4 +40,12 @@ public class ViolationsController {
     ) {
         return violationService.createViolation(request, userDetails);
     }
+    @GetMapping("")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CreateViolationResponse getViolations(
+            @RequestBody CreateViolationRequest request,
+            @AuthenticationPrincipal AppUserDetails userDetails
+    ) {
+        return violationService.createViolation(request, userDetails);
+    }
 }
