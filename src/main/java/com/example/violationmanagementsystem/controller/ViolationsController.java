@@ -51,4 +51,12 @@ public class ViolationsController {
         System.out.println(responses);
         return responses;
     }
+    @PostMapping("/claim")
+    @ResponseStatus(HttpStatus.OK)
+    public List<GetViolationResponse> claimViolations(@AuthenticationPrincipal AppUserDetails userDetails) {
+//        return violationService.getViolations(userDetails);
+        List<GetViolationResponse> responses = violationService.getViolations(userDetails);
+        System.out.println(responses);
+        return responses;
+    }
 }

@@ -46,10 +46,10 @@ public class ViolationService {
     ViolationRepo violationRepo;
 
     @Autowired
-    UserRepo userRepo;
+    ManualViolationRepo manualViolationRepo;
 
     @Autowired
-    ManualViolationRepo manualViolationRepo;
+    UserRepo userRepo;
 
     public ViolationImageResponse storeImage(MultipartFile image, AppUserDetails userDetails) throws IOException {
         Source source = sourceRepo.findByCode(SourceCode.MANUAL.name()).orElseThrow(() -> new RuntimeException("error"));
@@ -86,7 +86,6 @@ public class ViolationService {
         if (request.violationDate().after(new Date())) {
             throw new RuntimeException("invalid Date");
         }
-
 
         if (request.latitude() < 15.0 || request.latitude() > 33) {
             throw new RuntimeException("latitude out of bounds");
@@ -130,12 +129,22 @@ public class ViolationService {
         return new CreateViolationResponse(true, saved.getId());
     }
 
+    @Transactional
     public List<GetViolationResponse> getViolations(AppUserDetails userDetails) {
 
         User user = userRepo.findUserByUsername(userDetails.getUsername()).orElseThrow();
         String userRole = user.getRole().getCode();
-        log.info("Current User Role: {}. enum: {}", userRole, UserRole.OPERATOR.name());
+
+        if (userRole.equals(UserRole.INSPECTOR.name())) {
+            List<GetViolationResponse> response = manualViolationRepo.findByInspectorId(userDetails.getId()).stream().map(GetViolationResponse::from).toList();
+            log.info("Current Inspector Id: {}", user.getId());
+            response.forEach(v -> log.info("Violation Inspector id: {}", v.inspectorId()));
+            log.info("user={} id={} role={}", userDetails.getUsername(), userDetails.getId(), userRole);
+            return response;
+        }
         if (userRole.equals(UserRole.OPERATOR.name())) {
+
+            // TODO: assign in /claim
             assignViolations(userDetails.getId());
             return violationRepo.findByAssignedOperatorId(userDetails.getId()).stream().map(GetViolationResponse::from).toList();
         }

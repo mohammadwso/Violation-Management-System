@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 public record GetViolationResponse(
+        Long id,
         Float latitude,
         Float longitude,
         Long regionId,
@@ -29,6 +30,7 @@ public record GetViolationResponse(
 ) {
     public static GetViolationResponse from(Violation violation) {
         return new GetViolationResponse(
+                violation.getId(),
                 violation.getLatitude(),
                 violation.getLongitude(),
                 violation.getRegion().getId(),
