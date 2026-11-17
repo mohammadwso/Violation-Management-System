@@ -3,6 +3,7 @@ package com.example.violationmanagementsystem.controller;
 import com.example.violationmanagementsystem.dto.request.CreateViolationRequest;
 import com.example.violationmanagementsystem.dto.request.ViolationImageRequest;
 import com.example.violationmanagementsystem.dto.response.CreateViolationResponse;
+import com.example.violationmanagementsystem.dto.response.GetViolationResponse;
 import com.example.violationmanagementsystem.dto.response.ViolationImageResponse;
 import com.example.violationmanagementsystem.security.AppUserDetails;
 import com.example.violationmanagementsystem.service.ViolationService;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/violations")
@@ -40,12 +42,13 @@ public class ViolationsController {
     ) {
         return violationService.createViolation(request, userDetails);
     }
+
     @GetMapping("")
     @ResponseStatus(HttpStatus.CREATED)
-    public CreateViolationResponse getViolations(
-            @RequestBody CreateViolationRequest request,
-            @AuthenticationPrincipal AppUserDetails userDetails
-    ) {
-        return violationService.createViolation(request, userDetails);
+    public List<GetViolationResponse> getViolations(@AuthenticationPrincipal AppUserDetails userDetails) {
+//        return violationService.getViolations(userDetails);
+        List<GetViolationResponse> responses = violationService.getViolations(userDetails);
+        System.out.println(responses);
+        return responses;
     }
 }

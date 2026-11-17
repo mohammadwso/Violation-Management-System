@@ -1,28 +1,29 @@
 package com.example.violationmanagementsystem.service;
 
 import com.example.violationmanagementsystem.dto.request.CreateViolationRequest;
-import com.example.violationmanagementsystem.dto.request.ViolationImageRequest;
 import com.example.violationmanagementsystem.dto.response.CreateViolationResponse;
+import com.example.violationmanagementsystem.dto.response.GetViolationResponse;
+
 import com.example.violationmanagementsystem.dto.response.ViolationImageResponse;
 import com.example.violationmanagementsystem.entity.*;
 import com.example.violationmanagementsystem.enums.SourceCode;
 import com.example.violationmanagementsystem.enums.StatusCode;
+import com.example.violationmanagementsystem.enums.UserRole;
 import com.example.violationmanagementsystem.exception.BadRequestException;
 import com.example.violationmanagementsystem.repo.*;
 import com.example.violationmanagementsystem.security.AppUserDetails;
-import jakarta.validation.constraints.NotNull;
-import org.hibernate.validator.constraints.Length;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.security.Key;
 import java.util.Date;
-import java.util.UUID;
+import java.util.List;
+import java.util.Optional;
 
+@Slf4j
 @Service
 public class ViolationService {
 
@@ -64,6 +65,8 @@ public class ViolationService {
 
     @Transactional
     public CreateViolationResponse createViolation(CreateViolationRequest request, AppUserDetails userDetails) {
+        System.out.println(request);
+        System.out.println(userDetails);
         Region region = regionRepo.findById(request.regionId())
                 .filter(Region::isActive)
                 .orElseThrow(() -> new BadRequestException("region doesn't exist"));
@@ -77,7 +80,8 @@ public class ViolationService {
                 .orElseThrow(() -> new RuntimeException("manual source doesnt exists"));
 
         User user = userRepo.findUserByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new RuntimeException("user doesnt exists"));;
+                .orElseThrow(() -> new RuntimeException("user doesnt exists"));
+        ;
 
         if (request.violationDate().after(new Date())) {
             throw new RuntimeException("invalid Date");
@@ -116,13 +120,45 @@ public class ViolationService {
                 status,
                 source,
                 user
-                );
+        );
         violation.setCreatedAt(new Date());
         violation.setUpdatedAt(new Date());
         String finalKey = storageService.promote(imageKey);
         violation.setViolationImageKey(finalKey);
-        ManualViolation saved =  manualViolationRepo.save(violation);
+        ManualViolation saved = manualViolationRepo.save(violation);
 
         return new CreateViolationResponse(true, saved.getId());
+    }
+
+    public List<GetViolationResponse> getViolations(AppUserDetails userDetails) {
+
+        User user = userRepo.findUserByUsername(userDetails.getUsername()).orElseThrow();
+        String userRole = user.getRole().getCode();
+        log.info("Current User Role: {}. enum: {}", userRole, UserRole.OPERATOR.name());
+        if (userRole.equals(UserRole.OPERATOR.name())) {
+            assignViolations(userDetails.getId());
+            return violationRepo.findByAssignedOperatorId(userDetails.getId()).stream().map(GetViolationResponse::from).toList();
+        }
+
+        return violationRepo.findAll().stream().map(GetViolationResponse::from).toList();
+    }
+
+    private void assignViolations(Long id) {
+        List<Violation> violations = violationRepo.findByAssignedOperatorId(id);
+        log.info("Currently Assigned Cases: {}", violations.toArray().length);
+        if (!violations.isEmpty()) {
+            return;
+        }
+        Optional<Violation> violation = violationRepo.findByAssignedOperatorId(null).stream().findFirst();
+        if (violation.isEmpty()) {
+            log.info("No Unassigned Cases");
+            return;
+        }
+        violation.get().setAssignedOperator(userRepo.findById(id).orElseThrow());
+        violation.get().setAssignedAt(new Date());
+        log.info("Updating Violation: {}", violation);
+        violationRepo.save(violation.get());
+        log.info("Violation Assigned Successfully ");
+        return;
     }
 }

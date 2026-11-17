@@ -2,6 +2,7 @@ package com.example.violationmanagementsystem.exception;
 
 import com.example.violationmanagementsystem.dto.response.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -48,8 +50,12 @@ public class GlobalExceptionHandler {
 
     private ResponseEntity<ErrorResponse> build(HttpStatus status, String message,
                                                 HttpServletRequest req, Map<String, String> fieldErrors) {
+        log.info("Status: {}", status);
+        log.info("Message: {}", message);
+        log.info("Request: {}", req);
+        log.info("Fields: {}", fieldErrors);
         return ResponseEntity.status(status).body(
                 ErrorResponse.of(status.value(), status.getReasonPhrase(),
-                        message, req.getRequestURI(), fieldErrors));
+                        message, req.getRequestURI(), fieldErrors   ));
     }
 }

@@ -1,0 +1,39 @@
+# Add these to your existing docker-compose.yml, or run alongside it:
+#   docker compose -f docker-compose.yml -f mock-services/docker-compose.mock.yml up -d
+# Hostnames (kafka, rabbitmq, minio) must match the service names in your main compose file.
+
+services:
+  mock-accepted-receiver:
+    build: ./mock-services
+    command: python receiver.py
+    ports:
+      - "8085:8080"   # point our system at http://mock-accepted-receiver:8080/
+    restart: unless-stopped
+
+  mock-kafka-producer:
+    build: ./mock-services
+    command: python kafka_producer.py
+    environment:
+      KAFKA_BOOTSTRAP: kafka:9092
+      KAFKA_TOPIC: violations
+      MINIO_ENDPOINT: minio:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+      MINIO_BUCKET: violations
+      INTERVAL_SECONDS: "2"
+    depends_on: [kafka, minio]
+    restart: unless-stopped   # retries until kafka is actually ready
+
+  mock-rmq-producer:
+    build: ./mock-services
+    command: python rmq_producer.py
+    environment:
+      RMQ_URL: amqp://guest:guest@rabbitmq:5672/
+      RMQ_QUEUE: violations
+      MINIO_ENDPOINT: minio:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+      MINIO_BUCKET: violations
+      INTERVAL_SECONDS: "2"
+    depends_on: [rabbitmq, minio]
+    restart: unless-stopped

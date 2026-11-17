@@ -37,6 +37,16 @@
 - [ ] Wrap all responses: success in `ApiResponse`, errors in `ErrorResponse` (every endpoint + exception handler)
 - [ ] Logging AOP: aspect that logs method calls (args, result/exception, duration) for controllers/services
 
+### Learning topics
+- [ ] Logger
+- [ ] Excel and PDF reports
+- [ ] Entity auditing
+- [ ] Custom validators
+- [ ] Swagger
+- [ ] RestTemplate
+- [ ] RabbitMQ: producing and consuming
+- [ ] RabbitMQ vs Kafka: correct use cases
+
 ### Cleanup
 - [ ] Move secrets (DB password, JWT secret, MinIO keys) out of committed properties into `.env` or environment variables
 - [ ] README: users table, running commands
