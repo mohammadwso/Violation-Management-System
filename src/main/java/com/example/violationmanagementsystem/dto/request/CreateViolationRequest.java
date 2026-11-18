@@ -28,6 +28,7 @@ public record CreateViolationRequest(
         @NotNull
         String violationImageKey,
         @NotNull
-        Date violationDate
+        Date violationDate,
+        String inspectorNote
 ) {
 }

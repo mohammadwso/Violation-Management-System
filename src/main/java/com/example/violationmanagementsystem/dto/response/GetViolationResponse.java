@@ -2,12 +2,16 @@ package com.example.violationmanagementsystem.dto.response;
 
 import com.example.violationmanagementsystem.entity.ManualViolation;
 import com.example.violationmanagementsystem.entity.Violation;
+import com.example.violationmanagementsystem.enums.UserRole;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 
 import java.util.Date;
 import java.util.List;
 
+import static com.example.violationmanagementsystem.mapper.ViolationMapper.getInspectorNote;
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public record GetViolationResponse(
         Long id,
         Float latitude,
@@ -25,8 +29,9 @@ public record GetViolationResponse(
         Date violationCreationDate,
         Date violationUpdateDate,
         Long inspectorId,
-        String cameraId
-
+        String cameraId,
+        String inspectorNote,
+        String operatorNote
 ) {
     public static GetViolationResponse from(Violation violation) {
         return new GetViolationResponse(
@@ -48,7 +53,9 @@ public record GetViolationResponse(
                 violation instanceof ManualViolation manualViolation
                         ? manualViolation.getInspector().getId() : null,
                 violation instanceof ManualViolation manualViolation
-                        ? null : "someId"
+                        ? null : "someId",
+                getInspectorNote(violation),
+                getInspectorNote(violation)
         );
 
     }

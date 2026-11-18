@@ -10,6 +10,8 @@ import com.example.violationmanagementsystem.service.ViolationService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -51,12 +53,13 @@ public class ViolationsController {
         System.out.println(responses);
         return responses;
     }
+
     @PostMapping("/claim")
     @ResponseStatus(HttpStatus.OK)
-    public List<GetViolationResponse> claimViolations(@AuthenticationPrincipal AppUserDetails userDetails) {
+    @PreAuthorize("hasRole(OPERATOR)")
+    public ResponseEntity<Boolean> claimViolations(@AuthenticationPrincipal AppUserDetails userDetails) {
 //        return violationService.getViolations(userDetails);
-        List<GetViolationResponse> responses = violationService.getViolations(userDetails);
-        System.out.println(responses);
-        return responses;
+        return ResponseEntity.ok(violationService.claimViolations(userDetails));
+
     }
 }

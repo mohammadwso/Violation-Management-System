@@ -2,7 +2,14 @@ package com.example.violationmanagementsystem.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.Instant;
 
 @Data
 @Entity
@@ -18,16 +25,37 @@ public class User {
     @Column(nullable = false, unique = true, length = 50)
     private String username;
 
-    @Column(nullable = false, length = 255)
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Size(max = 255)
+    @NotNull
+    @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(nullable = false, unique = true, length = 100)
+    @Size(max = 100)
+    @NotNull
+    @Column(name = "email", nullable = false, length = 100)
     private String email;
+
+    @NotNull
     @Column(name = "enabled", nullable = false)
-    private boolean enabled;
+    private Boolean enabled;
+
+    @NotNull
+    @ColumnDefault("1")
     @Column(name = "account_non_locked", nullable = false)
-    private boolean accountNonLocked;
+    private Boolean accountNonLocked;
+
+
+    @NotNull
+    @CreationTimestamp
+    @ColumnDefault("sysutcdatetime()")
+    @Column(name = "created_at", nullable = false)
+    private Instant createdAt;
+
+    @NotNull
+    @ColumnDefault("sysutcdatetime()")
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
+    private Instant updatedAt;
 
     @ManyToOne(
             cascade = {CascadeType.DETACH,

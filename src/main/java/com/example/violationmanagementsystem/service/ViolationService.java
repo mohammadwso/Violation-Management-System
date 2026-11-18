@@ -19,9 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -65,8 +63,6 @@ public class ViolationService {
 
     @Transactional
     public CreateViolationResponse createViolation(CreateViolationRequest request, AppUserDetails userDetails) {
-        System.out.println(request);
-        System.out.println(userDetails);
         Region region = regionRepo.findById(request.regionId())
                 .filter(Region::isActive)
                 .orElseThrow(() -> new BadRequestException("region doesn't exist"));
@@ -74,8 +70,6 @@ public class ViolationService {
                 .orElseThrow(() -> new BadRequestException("region doesn't exist"));
         Status status = Status.from(StatusCode.NEW);
         // use code or change violation table fk to use code
-        System.out.println(status);
-
         Source source = sourceRepo.findByCode(SourceCode.MANUAL.name())
                 .orElseThrow(() -> new RuntimeException("manual source doesnt exists"));
 
@@ -120,8 +114,14 @@ public class ViolationService {
                 source,
                 user
         );
-        violation.setCreatedAt(new Date());
-        violation.setUpdatedAt(new Date());
+
+        if (request.inspectorNote() != null) {
+            ViolationNote violationNote = new ViolationNote();
+            violationNote.setUser(user);
+            violationNote.setViolation(violation);
+            violation.addNote(violationNote);
+        }
+
         String finalKey = storageService.promote(imageKey);
         violation.setViolationImageKey(finalKey);
         ManualViolation saved = manualViolationRepo.save(violation);
@@ -129,9 +129,7 @@ public class ViolationService {
         return new CreateViolationResponse(true, saved.getId());
     }
 
-    @Transactional
     public List<GetViolationResponse> getViolations(AppUserDetails userDetails) {
-
         User user = userRepo.findUserByUsername(userDetails.getUsername()).orElseThrow();
         String userRole = user.getRole().getCode();
 
@@ -144,12 +142,16 @@ public class ViolationService {
         }
         if (userRole.equals(UserRole.OPERATOR.name())) {
 
-            // TODO: assign in /claim
-            assignViolations(userDetails.getId());
             return violationRepo.findByAssignedOperatorId(userDetails.getId()).stream().map(GetViolationResponse::from).toList();
         }
 
         return violationRepo.findAll().stream().map(GetViolationResponse::from).toList();
+    }
+
+    @Transactional
+    public boolean claimViolations(AppUserDetails userDetails) {
+        assignViolations(userDetails.getId());
+        return true;
     }
 
     private void assignViolations(Long id) {

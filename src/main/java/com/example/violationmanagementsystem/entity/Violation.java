@@ -5,8 +5,9 @@ import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.boot.internal.Abstract;
+import org.jspecify.annotations.NonNull;
 
-import java.util.Date;
+import java.util.*;
 
 @Data
 @Entity
@@ -65,6 +66,10 @@ public abstract class Violation {
     @Column(name = "updated_at")
     private Date updatedAt;
 
+    @NonNull
+    @OneToMany(mappedBy = "violation", cascade = {CascadeType.ALL})
+    private List<ViolationNote> violationNotes = new ArrayList<>();
+
     public Violation() {
     }
 
@@ -86,5 +91,8 @@ public abstract class Violation {
         this.region = region;
         this.status = status;
         this.source = source;
+    }
+    public void addNote(ViolationNote violationNote) {
+        violationNotes.add(violationNote);
     }
 }

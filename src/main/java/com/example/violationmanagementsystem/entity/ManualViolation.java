@@ -1,6 +1,7 @@
 package com.example.violationmanagementsystem.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.util.Date;
@@ -9,8 +10,9 @@ import java.util.Date;
 @Entity
 @Table(name = "violations_manual")
 public class ManualViolation extends Violation {
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "inspector_id")
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "inspector_id", nullable = false)
     private User inspector;
 
     public ManualViolation() {
