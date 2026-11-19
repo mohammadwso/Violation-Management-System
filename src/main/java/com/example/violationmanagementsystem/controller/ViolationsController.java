@@ -2,9 +2,11 @@ package com.example.violationmanagementsystem.controller;
 
 import com.example.violationmanagementsystem.dto.request.CreateViolationRequest;
 import com.example.violationmanagementsystem.dto.request.ViolationImageRequest;
+import com.example.violationmanagementsystem.dto.response.ApiResponse;
 import com.example.violationmanagementsystem.dto.response.CreateViolationResponse;
 import com.example.violationmanagementsystem.dto.response.GetViolationResponse;
 import com.example.violationmanagementsystem.dto.response.ViolationImageResponse;
+import com.example.violationmanagementsystem.enums.ResponseStatusCode;
 import com.example.violationmanagementsystem.exception.BadRequestException;
 import com.example.violationmanagementsystem.security.AppUserDetails;
 import com.example.violationmanagementsystem.service.ViolationService;
@@ -30,29 +32,32 @@ public class ViolationsController {
 
     @PostMapping("/images")
     @ResponseStatus(HttpStatus.CREATED)
-    public ViolationImageResponse uploadViolationImage(
+    public ResponseEntity<?> uploadViolationImage(
             @Valid @ModelAttribute ViolationImageRequest request,
             @AuthenticationPrincipal AppUserDetails userDetails
     ) throws IOException {
-        return violationService.storeImage(request.image(), userDetails);
+        return ApiResponse.getSuccessResponse(violationService.storeImage(request.image(), userDetails));
     }
 
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
-    public CreateViolationResponse createViolation(
+    public ResponseEntity<?> createViolation(
             @Valid @RequestBody CreateViolationRequest request,
             @AuthenticationPrincipal AppUserDetails userDetails
     ) throws BadRequestException {
-        return violationService.createViolation(request, userDetails);
+        return
+                ApiResponse.getSuccessResponse(violationService.createViolation(request, userDetails));
     }
 
     @GetMapping("")
     @ResponseStatus(HttpStatus.CREATED)
-    public List<GetViolationResponse> getViolations(@AuthenticationPrincipal AppUserDetails userDetails) {
-//        return violationService.getViolations(userDetails);
-        List<GetViolationResponse> responses = violationService.getViolations(userDetails);
-        System.out.println(responses);
-        return responses;
+    public ResponseEntity<?> getViolations(@AuthenticationPrincipal AppUserDetails userDetails) {
+        return ApiResponse.getSuccessResponse(violationService.getViolations(userDetails));
+
+
+//        List<GetViolationResponse> responses = violationService.getViolations(userDetails);
+//        System.out.println(responses);
+//        return responses;
     }
 
     @PostMapping("/claim")
