@@ -62,10 +62,28 @@ public class ViolationsController {
 
     @PostMapping("/claim")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole(OPERATOR)")
-    public ResponseEntity<Boolean> claimViolations(@AuthenticationPrincipal AppUserDetails userDetails) {
+    @PreAuthorize("hasRole('OPERATOR')")
+    public ResponseEntity<?> claimViolations(@AuthenticationPrincipal AppUserDetails userDetails) {
 //        return violationService.getViolations(userDetails);
-        return ResponseEntity.ok(violationService.claimViolations(userDetails));
+        return ApiResponse.getSuccessResponse(violationService.claimViolations(userDetails));
+    }
+
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> getViolation(@AuthenticationPrincipal AppUserDetails userDetails,
+                                          @PathVariable String id) {
+//        return violationService.getViolations(userDetails);
+        return ApiResponse.getSuccessResponse(violationService.getViolation(userDetails, id));
+
+    }
+
+    @PostMapping("/{id}/accept")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('OPERATOR')")
+    public ResponseEntity<?> acceptViolation(@AuthenticationPrincipal AppUserDetails userDetails,
+                                             @PathVariable String id) {
+//        return violationService.getViolations(userDetails);
+        return ApiResponse.getSuccessResponse(violationService.acceptViolation(id, userDetails));
 
     }
 }

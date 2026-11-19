@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface ManualViolationRepo extends JpaRepository<ManualViolation, Long> {
     List<ManualViolation> findByInspectorId(Long inspectorId);
+
+    ManualViolation findByIdAndInspectorId(Long id, Long inspectorId);
 }

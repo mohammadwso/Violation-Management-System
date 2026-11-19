@@ -17,6 +17,8 @@ public interface ViolationRepo extends JpaRepository<Violation, Long> {
     @EntityGraph(attributePaths = {"violationNotes", "violationNotes.user", "violationNotes.user.role"})
     List<Violation> findByAssignedOperatorId(Long id);
     @EntityGraph(attributePaths = {"violationNotes", "violationNotes.user", "violationNotes.user.role"})
+    Optional<Violation> findByIdAndAssignedOperatorId(Long id, Long assignedOperatorId);
+    @EntityGraph(attributePaths = {"violationNotes", "violationNotes.user", "violationNotes.user.role"})
     List<Violation> findByAssignedOperatorIdAndStatusId(Long id, Long StatusId);
 
 }

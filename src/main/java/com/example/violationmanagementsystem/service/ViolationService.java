@@ -10,10 +10,16 @@ import com.example.violationmanagementsystem.enums.SourceCode;
 import com.example.violationmanagementsystem.enums.StatusCode;
 import com.example.violationmanagementsystem.enums.UserRole;
 import com.example.violationmanagementsystem.exception.BadRequestException;
+import com.example.violationmanagementsystem.exception.ErrorCode;
+import com.example.violationmanagementsystem.exception.ForbiddenException;
+import com.example.violationmanagementsystem.exception.base.AppException;
 import com.example.violationmanagementsystem.repo.*;
 import com.example.violationmanagementsystem.security.AppUserDetails;
+import jakarta.validation.constraints.Null;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -75,9 +81,7 @@ public class ViolationService {
         Source source = sourceRepo.findByCode(SourceCode.MANUAL.name())
                 .orElseThrow(() -> new RuntimeException("manual source doesnt exists"));
 
-        User user = userRepo.findUserByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new RuntimeException("user doesnt exists"));
-        ;
+        User user = getUser(userDetails);
 
         if (request.violationDate().after(new Date())) {
             throw new RuntimeException("invalid Date");
@@ -131,11 +135,18 @@ public class ViolationService {
         return new CreateViolationResponse(true, saved.getId());
     }
 
+    private @NonNull User getUser(AppUserDetails userDetails) {
+        User user = userRepo.findUserByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("user doesnt exists"));
+        return user;
+    }
+
     public List<GetViolationResponse> getViolations(AppUserDetails userDetails) {
-        User user = userRepo.findUserByUsername(userDetails.getUsername()).orElseThrow();
+        User user = getUser(userDetails);
         String userRole = user.getRole().getCode();
 
         if (userRole.equals(UserRole.INSPECTOR.name())) {
+            log.info("getViolations - Inspector branch ");
             List<GetViolationResponse> response = manualViolationRepo.findByInspectorId(userDetails.getId()).stream().map(GetViolationResponse::from).toList();
             log.info("Current Inspector Id: {}", user.getId());
             response.forEach(v -> log.info("Violation Inspector id: {}", v.inspectorId()));
@@ -143,10 +154,11 @@ public class ViolationService {
             return response;
         }
         if (userRole.equals(UserRole.OPERATOR.name())) {
-
+            log.info("getViolations - operator branch ");
             return violationRepo.findByAssignedOperatorId(userDetails.getId()).stream().map(GetViolationResponse::from).toList();
         }
 
+        log.info("getViolations - default branch ");
         return violationRepo.findAll().stream().map(GetViolationResponse::from).toList();
     }
 
@@ -157,11 +169,10 @@ public class ViolationService {
     }
 
     private void assignViolations(Long id) {
+        // TODO: change the status to in progress
         List<Violation> violations = violationRepo.findByAssignedOperatorId(id);
         log.info("Currently Assigned Cases: {}", violations.toArray().length);
-        if (!violations.isEmpty()) {
-            return;
-        }
+
         Optional<Violation> violation = violationRepo.findByAssignedOperatorId(null).stream().findFirst();
         if (violation.isEmpty()) {
             log.info("No Unassigned Cases");
@@ -169,9 +180,86 @@ public class ViolationService {
         }
         violation.get().setAssignedOperator(userRepo.findById(id).orElseThrow());
         violation.get().setAssignedAt(new Date());
+        if (!violations.isEmpty()) {
+            violations.forEach(oldViolation -> {
+                oldViolation.setAssignedOperator(null);
+                violationRepo.save(oldViolation);
+            });
+            return;
+        }
         log.info("Updating Violation: {}", violation);
         violationRepo.save(violation.get());
         log.info("Violation Assigned Successfully ");
         return;
+    }
+
+    public GetViolationResponse getViolation(AppUserDetails userDetails, String violationId) {
+        /**
+         * NOTE: going with multiple queries for each case will make the result less
+         * but going with one query will make the Exception more accurate
+         * e.g. FORBIDDEN for violations existing but not `created by inspector` or `assigned to operator`
+         */
+
+        Long vId = Long.valueOf(violationId);
+        User user = userRepo.findUserByUsername(userDetails.getUsername()).orElseThrow();
+        String userRole = user.getRole().getCode();
+
+        if (userRole.equals(UserRole.INSPECTOR.name())) {
+            log.info("getViolations - Inspector branch ");
+            log.info("violation ID: {}", violationId);
+            log.info("VID: {}", vId);
+            log.info("USERID: {}", userDetails.getId());
+            Violation violation = manualViolationRepo.findByIdAndInspectorId(vId, userDetails.getId());
+            if (violation == null) {
+                throw new BadRequestException("Violation not found");
+            }
+            GetViolationResponse response = GetViolationResponse.from(violation);
+            return response;
+        }
+        if (userRole.equals(UserRole.OPERATOR.name())) {
+            log.info("getViolations - operator branch ");
+            Optional<Violation> violation = violationRepo.findByIdAndAssignedOperatorId(vId, userDetails.getId());
+            if (violation.isEmpty()) {
+                throw new BadRequestException("Violation not found");
+            }
+            return GetViolationResponse.from(violation.get());
+        }
+
+        log.info("getViolations - default branch ");
+        return GetViolationResponse.from(violationRepo.findById(vId).get());
+    }
+
+    public Violation getViolation(String violationId) {
+        Long vId = Long.valueOf(violationId);
+        return violationRepo.findById(vId).get();
+
+    }
+
+    public Null acceptViolation(String id, AppUserDetails userDetails) {
+        Violation violation = getViolation(id);
+        log.info("Violation: {}", violation);
+        User user = getUser(userDetails);
+        Role role = user.getRole();
+
+        if (!UserRole.OPERATOR.name().equals(role.getCode())) {
+            log.error("User Role: {}, Processing violation allowed only for: {}", role.getCode(), UserRole.OPERATOR.name());
+            throw new ForbiddenException("You don't have the privilege to process violations");
+        }
+        User assignedOperator = violation.getAssignedOperator();
+
+        if (assignedOperator == null || !Objects.equals(assignedOperator.getId(), user.getId())) {
+            log.warn("User {} tried to process violation {} assigned to {}",
+                    user.getId(), violation.getId(),
+                    assignedOperator != null ? assignedOperator.getId() : null);
+            throw new ForbiddenException("This violation is not assigned to you");
+        }
+        if (!StatusCode.NEW.name().equals(violation.getStatus().getCode())) {
+            throw new ForbiddenException("Violation Can't be proccessed");
+        }
+        Status approved = statusRepo.findByCode(StatusCode.APPROVED.name())
+                .orElseThrow(() -> new RuntimeException("APPROVED status not found"));
+        violation.setStatus(approved);
+        violationRepo.save(violation);
+        return null;
     }
 }
