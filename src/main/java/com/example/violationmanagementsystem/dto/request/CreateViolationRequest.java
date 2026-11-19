@@ -1,5 +1,7 @@
 package com.example.violationmanagementsystem.dto.request;
 
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -10,10 +12,12 @@ import java.util.Date;
 
 public record CreateViolationRequest(
         @NotNull
-        @Length(min = 4)
+        @DecimalMin("-90.0")
+        @DecimalMax("90.0")
         Float latitude,
         @NotNull
-        @Length(min = 4)
+        @DecimalMin("-180.0")
+        @DecimalMax("180.0")
         Float longitude,
         @NotNull
         Long regionId,

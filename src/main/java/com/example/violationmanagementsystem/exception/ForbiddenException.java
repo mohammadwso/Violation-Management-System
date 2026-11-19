@@ -1,7 +1,10 @@
 package com.example.violationmanagementsystem.exception;
 
-public class ForbiddenException extends RuntimeException{
+import com.example.violationmanagementsystem.exception.base.AppException;
+import org.springframework.http.HttpStatus;
+
+public class ForbiddenException extends AppException {
     public ForbiddenException(String message) {
-        super(message);
+        super(message, ErrorCode.FORBIDDEN, HttpStatus.FORBIDDEN);
     }
 }

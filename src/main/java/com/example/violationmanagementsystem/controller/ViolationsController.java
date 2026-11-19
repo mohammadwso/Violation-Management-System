@@ -5,6 +5,7 @@ import com.example.violationmanagementsystem.dto.request.ViolationImageRequest;
 import com.example.violationmanagementsystem.dto.response.CreateViolationResponse;
 import com.example.violationmanagementsystem.dto.response.GetViolationResponse;
 import com.example.violationmanagementsystem.dto.response.ViolationImageResponse;
+import com.example.violationmanagementsystem.exception.BadRequestException;
 import com.example.violationmanagementsystem.security.AppUserDetails;
 import com.example.violationmanagementsystem.service.ViolationService;
 import jakarta.validation.Valid;
@@ -39,9 +40,9 @@ public class ViolationsController {
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
     public CreateViolationResponse createViolation(
-            @RequestBody CreateViolationRequest request,
+            @Valid @RequestBody CreateViolationRequest request,
             @AuthenticationPrincipal AppUserDetails userDetails
-    ) {
+    ) throws BadRequestException {
         return violationService.createViolation(request, userDetails);
     }
 
