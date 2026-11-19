@@ -10,10 +10,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class ViolationMapper {
 
-    public static String getInspectorNote(Violation violation) {
-        log.info(violation.getViolationNotes().toString());
+    public static String getRoleNote(Violation violation, UserRole role) {
+        log.info("MAPPER violationNotes: {}", violation.getViolationNotes());
         return violation.getViolationNotes().stream()
-                .filter(violationNote -> violationNote.getUser().getRole().getCode() == UserRole.INSPECTOR.name())
+                .filter(violationNote -> role.name().equals(violationNote.getUser().getRole().getCode().toString()))
                 .map(ViolationNote::getViolationNote).findFirst().orElse(null);
     }
 }

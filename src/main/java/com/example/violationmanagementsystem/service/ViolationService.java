@@ -63,6 +63,8 @@ public class ViolationService {
 
     @Transactional
     public CreateViolationResponse createViolation(CreateViolationRequest request, AppUserDetails userDetails) {
+        log.info("Request: {}", request);
+        log.info("Inspector Notes: {}", request.inspectorNote());
         Region region = regionRepo.findById(request.regionId())
                 .filter(Region::isActive)
                 .orElseThrow(() -> new BadRequestException("region doesn't exist"));
@@ -118,7 +120,7 @@ public class ViolationService {
         if (request.inspectorNote() != null) {
             ViolationNote violationNote = new ViolationNote();
             violationNote.setUser(user);
-            violationNote.setViolation(violation);
+            violationNote.setViolationNote(request.inspectorNote());
             violation.addNote(violationNote);
         }
 

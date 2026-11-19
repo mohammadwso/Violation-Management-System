@@ -4,13 +4,11 @@ import com.example.violationmanagementsystem.entity.ManualViolation;
 import com.example.violationmanagementsystem.entity.Violation;
 import com.example.violationmanagementsystem.enums.UserRole;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.validation.constraints.NotNull;
-import org.hibernate.validator.constraints.Length;
 
 import java.util.Date;
-import java.util.List;
 
-import static com.example.violationmanagementsystem.mapper.ViolationMapper.getInspectorNote;
+import static com.example.violationmanagementsystem.mapper.ViolationMapper.getRoleNote;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record GetViolationResponse(
         Long id,
@@ -54,8 +52,8 @@ public record GetViolationResponse(
                         ? manualViolation.getInspector().getId() : null,
                 violation instanceof ManualViolation manualViolation
                         ? null : "someId",
-                getInspectorNote(violation),
-                getInspectorNote(violation)
+                getRoleNote(violation, UserRole.INSPECTOR),
+                getRoleNote(violation, UserRole.OPERATOR)
         );
 
     }

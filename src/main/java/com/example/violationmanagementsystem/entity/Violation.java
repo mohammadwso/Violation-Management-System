@@ -94,5 +94,6 @@ public abstract class Violation {
     }
     public void addNote(ViolationNote violationNote) {
         violationNotes.add(violationNote);
+        violationNote.setViolation(this);
     }
 }
