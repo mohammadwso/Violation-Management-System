@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -22,6 +24,8 @@ public class ViolationAssignmentHistory {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "violation_id", nullable = false)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Violation violation;
 
     @ManyToOne
@@ -39,7 +43,7 @@ public class ViolationAssignmentHistory {
     @Column(name = "outcome", length = 20)
     private String outcome;
 
-    @NotNull
+
     @ColumnDefault("sysutcdatetime()")
     @CreationTimestamp
     @Column(name = "created_at", nullable = false)

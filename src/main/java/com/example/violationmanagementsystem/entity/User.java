@@ -19,9 +19,11 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
     @Column(name = "national_id", nullable = false, unique = true, length = 10)
     private String nationalId;
 
+    @NotNull
     @Column(nullable = false, unique = true, length = 50)
     private String username;
 
@@ -39,19 +41,15 @@ public class User {
     @Column(name = "enabled", nullable = false)
     private Boolean enabled;
 
-    @NotNull
     @ColumnDefault("1")
     @Column(name = "account_non_locked", nullable = false)
     private Boolean accountNonLocked;
 
-
-    @NotNull
     @CreationTimestamp
     @ColumnDefault("sysutcdatetime()")
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
-    @NotNull
     @ColumnDefault("sysutcdatetime()")
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)

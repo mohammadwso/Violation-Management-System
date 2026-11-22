@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: 034-unique-open-assignment-per-violation
+      author: mohammadwso
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - indexExists:
+                tableName: violation_assignment_history
+                indexName: ux_vah_one_open_per_violation
+      changes:
+        # filtered index: uniqueness applies only to rows where ended_at IS NULL,
+        # so a violation can have many closed rows but at most one open row.
+        # Liquibase's createIndex has no WHERE option, so raw SQL is used.
+        - sql:
+            sql: >
+              CREATE UNIQUE INDEX ux_vah_one_open_per_violation
+              ON violation_assignment_history (violation_id)
+              WHERE ended_at IS NULL
+      rollback:
+        - dropIndex:
+            tableName: violation_assignment_history
+            indexName: ux_vah_one_open_per_violation

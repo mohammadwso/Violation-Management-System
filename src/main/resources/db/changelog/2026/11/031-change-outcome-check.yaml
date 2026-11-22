@@ -1,0 +1,32 @@
+databaseChangeLog:
+  - changeSet:
+      id: 031-change-outcome-check
+      author: mohammadwso
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 1
+            sql: >
+              SELECT COUNT(*) FROM sys.check_constraints
+              WHERE name = 'ck_violation_assignment_history_outcome'
+                AND definition NOT LIKE '%''DECIDED''%'
+      changes:
+        - sql:
+            sql: >
+              ALTER TABLE violation_assignment_history
+              DROP CONSTRAINT ck_violation_assignment_history_outcome
+        - sql:
+            sql: >
+              ALTER TABLE violation_assignment_history
+              ADD CONSTRAINT ck_violation_assignment_history_outcome
+              CHECK (outcome IN ('DECIDED', 'RELEASED', 'EXPIRED'))
+      rollback:
+        - sql:
+            sql: >
+              ALTER TABLE violation_assignment_history
+              DROP CONSTRAINT ck_violation_assignment_history_outcome
+        - sql:
+            sql: >
+              ALTER TABLE violation_assignment_history
+              ADD CONSTRAINT ck_violation_assignment_history_outcome
+              CHECK (outcome IN ('APPROVED', 'REJECTED', 'EXPIRED'))

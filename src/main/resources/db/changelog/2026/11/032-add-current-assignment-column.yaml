@@ -1,0 +1,54 @@
+databaseChangeLog:
+  - changeSet:
+      id: 032-add-current-assignment-column
+      author: mohammadwso
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: violation_assignment_history
+        - not:
+            - columnExists:
+                tableName: violations
+                columnName: current_assignment_id
+      changes:
+        - addColumn:
+            tableName: violations
+            columns:
+              - column:
+                  name: current_assignment_id
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+        - createIndex:
+            tableName: violations
+            indexName: idx_violations_current_assignment_history
+            columns:
+              - column: { name: current_assignment_id }
+        # an FK can only target a PK or a unique key
+        # We need this for a (Composite Key)
+        # We need this to make the violation point at history row the violation being the same id
+        # example (id = 1, current_assignment_id = 10), row 10 -> (id 10, violationId = 2) is an error
+        - addUniqueConstraint:
+            tableName: violation_assignment_history
+            columnNames: id, violation_id
+            constraintName: uq_vah_id_violation
+        - addForeignKeyConstraint:
+            constraintName: fk_violations_current_assignment_history
+            baseTableName: violations
+            baseColumnNames: current_assignment_id, id
+            referencedTableName: violation_assignment_history
+            referencedColumnNames: id, violation_id
+            onDelete: NO ACTION
+      rollback:
+        - dropForeignKeyConstraint:
+            baseTableName: violations
+            constraintName: fk_violations_current_assignment_history
+        - dropUniqueConstraint:
+            tableName: violation_assignment_history
+            constraintName: uq_vah_id_violation
+        - dropIndex:
+            tableName: violations
+            indexName: idx_violations_current_assignment_history
+        - dropColumn:
+            tableName: violations
+            columnName: current_assignment_id

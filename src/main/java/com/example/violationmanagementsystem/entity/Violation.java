@@ -2,6 +2,10 @@ package com.example.violationmanagementsystem.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import org.apache.commons.lang3.builder.HashCodeExclude;
+import org.apache.commons.lang3.builder.ToStringExclude;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.boot.internal.Abstract;
@@ -50,12 +54,6 @@ public abstract class Violation {
     @JoinColumn(name = "region_id")
     private Region region;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assigned_operator_id", nullable = true)
-    private User assignedOperator;
-    @Column(name = "assigned_at")
-    private Date assignedAt;
-
     @Column(name = "decided_at")
     private Date decidedAt;
 
@@ -69,6 +67,12 @@ public abstract class Violation {
     @NonNull
     @OneToMany(mappedBy = "violation", cascade = {CascadeType.ALL})
     private List<ViolationNote> violationNotes = new ArrayList<>();
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "current_assignment_id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private ViolationAssignmentHistory currentAssignment;
 
     public Violation() {
     }

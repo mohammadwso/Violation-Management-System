@@ -57,3 +57,13 @@ databaseChangeLog:
       file: db/changelog/2026/11/028-create-violations-vim-table.yaml
   - include:
       file: db/changelog/2026/11/029-create-violations-manual-table.yaml
+  - include:
+      file: db/changelog/2026/11/030-load-ref-status-expired.yaml
+  - include:
+      file: db/changelog/2026/11/031-change-outcome-check.yaml
+  - include:
+      file: db/changelog/2026/11/032-add-current-assignment-column.yaml
+  - include:
+      file: db/changelog/2026/11/033-remove-assigned-operator-violations.yaml
+  - include:
+      file: db/changelog/2026/11/034-unique-open-assignment-per-violation.yaml

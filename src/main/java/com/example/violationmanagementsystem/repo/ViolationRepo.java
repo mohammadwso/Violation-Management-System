@@ -1,5 +1,6 @@
 package com.example.violationmanagementsystem.repo;
 
+import com.example.violationmanagementsystem.entity.Status;
 import com.example.violationmanagementsystem.entity.Violation;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,11 +15,22 @@ public interface ViolationRepo extends JpaRepository<Violation, Long> {
     @Override
     @EntityGraph(attributePaths = {"violationNotes", "violationNotes.user", "violationNotes.user.role"})
     Optional<Violation> findById(Long id);
+
+//    @EntityGraph(attributePaths = {"violationNotes", "violationNotes.user", "violationNotes.user.role"})
+//    List<Violation> findByAssignedOperatorId(Long id);
+
+//    @EntityGraph(attributePaths = {"violationNotes", "violationNotes.user", "violationNotes.user.role"})
+//    Optional<Violation> findByIdAndAssignedOperatorId(Long id, Long assignedOperatorId);
+
+//    @EntityGraph(attributePaths = {"violationNotes", "violationNotes.user", "violationNotes.user.role"})
+//    List<Violation> findByAssignedOperatorIdAndStatusId(Long id, Long StatusId);
     @EntityGraph(attributePaths = {"violationNotes", "violationNotes.user", "violationNotes.user.role"})
-    List<Violation> findByAssignedOperatorId(Long id);
+    List<Violation> findByCurrentAssignmentOperatorIdAndStatusId(Long id, Long StatusId);
+
     @EntityGraph(attributePaths = {"violationNotes", "violationNotes.user", "violationNotes.user.role"})
-    Optional<Violation> findByIdAndAssignedOperatorId(Long id, Long assignedOperatorId);
+    List<Violation> findByCurrentAssignmentOperatorId(Long id);
+
     @EntityGraph(attributePaths = {"violationNotes", "violationNotes.user", "violationNotes.user.role"})
-    List<Violation> findByAssignedOperatorIdAndStatusId(Long id, Long StatusId);
+    Optional<Violation> findByIdAndCurrentAssignmentOperatorId(Long id, Long assignedOperatorId);
 
 }

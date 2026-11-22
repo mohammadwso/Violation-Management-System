@@ -6,6 +6,7 @@ import com.example.violationmanagementsystem.dto.response.GetViolationResponse;
 
 import com.example.violationmanagementsystem.dto.response.ViolationImageResponse;
 import com.example.violationmanagementsystem.entity.*;
+import com.example.violationmanagementsystem.enums.Outcome;
 import com.example.violationmanagementsystem.enums.SourceCode;
 import com.example.violationmanagementsystem.enums.StatusCode;
 import com.example.violationmanagementsystem.enums.UserRole;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.*;
 
 @Slf4j
@@ -54,6 +56,8 @@ public class ViolationService {
 
     @Autowired
     UserRepo userRepo;
+    @Autowired
+    ViolationAssignmentHistoryRepo assignmentHistoryRepo;
 
     public ViolationImageResponse storeImage(MultipartFile image, AppUserDetails userDetails) throws IOException {
         Source source = sourceRepo.findByCode(SourceCode.MANUAL.name()).orElseThrow(() -> new RuntimeException("error"));
@@ -155,7 +159,7 @@ public class ViolationService {
         }
         if (userRole.equals(UserRole.OPERATOR.name())) {
             log.info("getViolations - operator branch ");
-            return violationRepo.findByAssignedOperatorId(userDetails.getId()).stream().map(GetViolationResponse::from).toList();
+            return violationRepo.findByCurrentAssignmentOperatorId(userDetails.getId()).stream().map(GetViolationResponse::from).toList();
         }
 
         log.info("getViolations - default branch ");
@@ -168,29 +172,52 @@ public class ViolationService {
         return true;
     }
 
-    private void assignViolations(Long id) {
-        // TODO: change the status to in progress
-        List<Violation> violations = violationRepo.findByAssignedOperatorId(id);
-        log.info("Currently Assigned Cases: {}", violations.toArray().length);
+    private boolean assignViolations(Long operatorId) {
+        Instant newInstant = Instant.now();
+        // Get Violations assigned to operator with status NEW
+        List<Violation> violations = violationRepo.findByCurrentAssignmentOperatorIdAndStatusId(operatorId, Status.from(StatusCode.ASSIGNED).getId());
+        log.info("Currently Assigned Cases: {}", violations.stream().count());
+        log.info("Currently Assigned Cases: {}", violations);
 
-        Optional<Violation> violation = violationRepo.findByAssignedOperatorId(null).stream().findFirst();
-        if (violation.isEmpty()) {
+        // Get Violations unassigned cases
+        Optional<Violation> optionalViolation = violationRepo.findByCurrentAssignmentOperatorId(null).stream().findFirst();
+        // Optional<Violation> findFirstByCurrentAssignmentIsNullAndStatusIdOrderByViolationDateAsc(Long statusId);
+
+        if (optionalViolation.isEmpty()) {
             log.info("No Unassigned Cases");
-            return;
+            return false;
         }
-        violation.get().setAssignedOperator(userRepo.findById(id).orElseThrow());
-        violation.get().setAssignedAt(new Date());
+        Violation violation = optionalViolation.get();
+        // Assigning the violation
+        if (violation.getCurrentAssignment() != null) {
+            updateAssignmentHistory(violation.getCurrentAssignment().getId(), Outcome.RELEASED, newInstant);
+            violation.setCurrentAssignment(null);
+            violationRepo.save(violation);
+        }
+        violation.setStatus(Status.from(StatusCode.ASSIGNED));
+
+        Violation savedViolation = violationRepo.save(violation);
+        ViolationAssignmentHistory history = addNewAssignmentHistory(savedViolation, userRepo.findById(operatorId).orElseThrow(), newInstant, StatusCode.ASSIGNED);
+        savedViolation.setCurrentAssignment(history);
+        Violation saved2Violation = violationRepo.save(savedViolation);
+
+        // removing other violation assignment
         if (!violations.isEmpty()) {
             violations.forEach(oldViolation -> {
-                oldViolation.setAssignedOperator(null);
+                ViolationAssignmentHistory assignmentHistory = oldViolation.getCurrentAssignment();
+                updateAssignmentHistory(assignmentHistory.getId(), Outcome.RELEASED, newInstant);
+                oldViolation.setCurrentAssignment(null);
                 violationRepo.save(oldViolation);
+                /* Optional<ViolationAssignmentHistory> assignmentHistory = assignmentHistoryRepo.findByViolationIdAndOperatorIdAndOutcomeIsNull(oldViolation.getId(), operatorId);
+                if (assignmentHistory.isPresent()) {
+                    updateAssignmentHistory(assignmentHistory.get().getId(), StatusCode.NEW, newInstant);
+                } else {
+                    log.warn("Violation with id: {}, was assigned but no assignment history");
+                }*/
             });
-            return;
         }
-        log.info("Updating Violation: {}", violation);
-        violationRepo.save(violation.get());
         log.info("Violation Assigned Successfully ");
-        return;
+        return true;
     }
 
     public GetViolationResponse getViolation(AppUserDetails userDetails, String violationId) {
@@ -218,7 +245,7 @@ public class ViolationService {
         }
         if (userRole.equals(UserRole.OPERATOR.name())) {
             log.info("getViolations - operator branch ");
-            Optional<Violation> violation = violationRepo.findByIdAndAssignedOperatorId(vId, userDetails.getId());
+            Optional<Violation> violation = violationRepo.findByIdAndCurrentAssignmentOperatorId(vId, userDetails.getId());
             if (violation.isEmpty()) {
                 throw new BadRequestException("Violation not found");
             }
@@ -236,16 +263,23 @@ public class ViolationService {
     }
 
     public Null acceptViolation(String id, AppUserDetails userDetails) {
+        // todo: fix
         Violation violation = getViolation(id);
         log.info("Violation: {}", violation);
         User user = getUser(userDetails);
         Role role = user.getRole();
+        Instant instant = Instant.now();
 
         if (!UserRole.OPERATOR.name().equals(role.getCode())) {
             log.error("User Role: {}, Processing violation allowed only for: {}", role.getCode(), UserRole.OPERATOR.name());
             throw new ForbiddenException("You don't have the privilege to process violations");
         }
-        User assignedOperator = violation.getAssignedOperator();
+        ViolationAssignmentHistory history = violation.getCurrentAssignment();
+        if (history == null) {
+            throw new RuntimeException("some error");
+        }
+
+        User assignedOperator = history.getOperator();
 
         if (assignedOperator == null || !Objects.equals(assignedOperator.getId(), user.getId())) {
             log.warn("User {} tried to process violation {} assigned to {}",
@@ -260,6 +294,30 @@ public class ViolationService {
                 .orElseThrow(() -> new RuntimeException("APPROVED status not found"));
         violation.setStatus(approved);
         violationRepo.save(violation);
+        updateAssignmentHistory(violation.getId(), Outcome.DECIDED, instant);
         return null;
     }
+
+//    public void addAssignmentHistory(Violation v, User user, Instant date) {
+//        // WIP
+//        ViolationAssignmentHistory history = new ViolationAssignmentHistory();
+//        history.setViolation(v);
+//        history.setAssignedAt(date == null ? v.getAssignedAt().toInstant() : date);
+//    }
+
+    public ViolationAssignmentHistory addNewAssignmentHistory(Violation v, User user, Instant instant, StatusCode statusCode) {
+        ViolationAssignmentHistory history = new ViolationAssignmentHistory();
+        history.setViolation(v);
+        history.setOperator(user);
+        history.setAssignedAt(instant);
+        return assignmentHistoryRepo.save(history);
+    }
+
+    public void updateAssignmentHistory(Long id, Outcome outcome, Instant instant) {
+        ViolationAssignmentHistory history = assignmentHistoryRepo.getById(id);
+        history.setEndedAt(instant);
+        history.setOutcome(outcome.name());
+        assignmentHistoryRepo.save(history);
+    }
+
 }

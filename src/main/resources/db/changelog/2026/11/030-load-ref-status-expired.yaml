@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: 030-load-ref-status-expired
+      author: mohammadwso
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM ref_status WHERE code = 'EXPIRED' OR id = 5
+      changes:
+        - insert:
+            tableName: ref_status
+            columns:
+              - column: { name: id,   valueNumeric: 5 }
+              - column: { name: code, value: EXPIRED }
+              - column: { name: name_en,     value: Expired }
+              - column: { name: name_ar,     value: منتهية }
+      rollback:
+        - delete:
+            tableName: ref_status
+            where: code = 'EXPIRED'
