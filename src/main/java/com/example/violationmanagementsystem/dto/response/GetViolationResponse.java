@@ -43,7 +43,7 @@ public record GetViolationResponse(
                 violation.getViolationType().getId(),
                 violation.getViolationImageKey(),
                 violation.getViolationDate(),
-                violation.getCurrentAssignment() != null ? violation.getCurrentAssignment().getId() : null,
+                violation.getCurrentAssignment() != null ? violation.getCurrentAssignment().getOperator().getId() : null,
                 violation.getCurrentAssignment() != null ? Date.from(violation.getCurrentAssignment().getAssignedAt()) : null,
                 violation.getDecidedAt(),
                 violation.getCreatedAt(),

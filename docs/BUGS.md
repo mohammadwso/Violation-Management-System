@@ -16,15 +16,15 @@ Compiles, but claim and accept are broken at runtime.
 
 ### P0: claim / accept don't work
 
-- [ ] Unassigned lookup uses `findByCurrentAssignmentOperatorId(null)`: the inner join through `currentAssignment` drops violations with no assignment, so it always returns "No Unassigned Cases". Use `findFirstByCurrentAssignmentIsNullAndStatusIdOrderByViolationDateAsc(NEW)`
-- [ ] `acceptViolation` checks status `NEW`, but claiming sets `ASSIGNED`, so every accept is rejected
-- [ ] `acceptViolation` calls `updateAssignmentHistory(violation.getId(), ...)`: passes the violation id as a history id. Use `history.getId()`
-- [ ] `@Data` on `Violation` ↔ `ViolationAssignmentHistory`: `toString`/`equals`/`hashCode` recurse forever (StackOverflowError on `log.info(..., violation)`). Add `@ToString.Exclude` + `@EqualsAndHashCode.Exclude` on both relation fields
+- [x] Unassigned lookup uses `findByCurrentAssignmentOperatorId(null)`: the inner join through `currentAssignment` drops violations with no assignment, so it always returns "No Unassigned Cases". Use `findFirstByCurrentAssignmentIsNullAndStatusIdOrderByViolationDateAsc(NEW)`
+- [x] `acceptViolation` checks status `NEW`, but claiming sets `ASSIGNED`, so every accept is rejected
+- [x] `acceptViolation` calls `updateAssignmentHistory(violation.getId(), ...)`: passes the violation id as a history id. Use `history.getId()`
+- [x] `@Data` on `Violation` ↔ `ViolationAssignmentHistory`: `toString`/`equals`/`hashCode` recurse forever (StackOverflowError on `log.info(..., violation)`). Add `@ToString.Exclude` + `@EqualsAndHashCode.Exclude` on both relation fields
 
 ### P1: wrong data
 
-- [ ] `GetViolationResponse.assignedOperatorId` returns the history row id (`getCurrentAssignment().getId()`), should be `getCurrentAssignment().getOperator().getId()`
-- [ ] Releasing old violations in `assignViolations` closes history and nulls the pointer but leaves status `ASSIGNED`; set it back to `NEW` or they are never picked up again
+- [x] `GetViolationResponse.assignedOperatorId` returns the history row id (`getCurrentAssignment().getId()`), should be `getCurrentAssignment().getOperator().getId()`
+- [x] Releasing old violations in `assignViolations` closes history and nulls the pointer but leaves status `ASSIGNED`; set it back to `NEW` or they are never picked up again
 - [ ] `acceptViolation` doesn't null `current_assignment_id` after `DECIDED`, doesn't set `decidedAt`, and isn't `@Transactional`
 - [ ] `Status.from` has no `EXPIRED` case → id `null` → NOT NULL violation on `status_id`
 - [ ] Ending an assignment (history row + pointer + status) is done differently in each caller; move it into one helper, e.g. `endCurrentAssignment(violation, outcome, newStatus, now)` used by release / accept / reject

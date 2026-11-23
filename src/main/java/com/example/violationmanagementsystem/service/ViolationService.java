@@ -180,7 +180,9 @@ public class ViolationService {
         log.info("Currently Assigned Cases: {}", violations);
 
         // Get Violations unassigned cases
-        Optional<Violation> optionalViolation = violationRepo.findByCurrentAssignmentOperatorId(null).stream().findFirst();
+        Optional<Violation> optionalViolation =
+                violationRepo.findFirstByCurrentAssignmentIsNullAndStatusIdOrderByUpdatedAtDateAsc(
+                        Status.from(StatusCode.NEW).getId());
         // Optional<Violation> findFirstByCurrentAssignmentIsNullAndStatusIdOrderByViolationDateAsc(Long statusId);
 
         if (optionalViolation.isEmpty()) {
@@ -207,6 +209,7 @@ public class ViolationService {
                 ViolationAssignmentHistory assignmentHistory = oldViolation.getCurrentAssignment();
                 updateAssignmentHistory(assignmentHistory.getId(), Outcome.RELEASED, newInstant);
                 oldViolation.setCurrentAssignment(null);
+                oldViolation.setStatus(Status.from(StatusCode.NEW));
                 violationRepo.save(oldViolation);
                 /* Optional<ViolationAssignmentHistory> assignmentHistory = assignmentHistoryRepo.findByViolationIdAndOperatorIdAndOutcomeIsNull(oldViolation.getId(), operatorId);
                 if (assignmentHistory.isPresent()) {
@@ -287,14 +290,14 @@ public class ViolationService {
                     assignedOperator != null ? assignedOperator.getId() : null);
             throw new ForbiddenException("This violation is not assigned to you");
         }
-        if (!StatusCode.NEW.name().equals(violation.getStatus().getCode())) {
-            throw new ForbiddenException("Violation Can't be proccessed");
+        if (!StatusCode.ASSIGNED.name().equals(violation.getStatus().getCode())) {
+            throw new ForbiddenException("Violation Can't be processed");
         }
         Status approved = statusRepo.findByCode(StatusCode.APPROVED.name())
                 .orElseThrow(() -> new RuntimeException("APPROVED status not found"));
         violation.setStatus(approved);
         violationRepo.save(violation);
-        updateAssignmentHistory(violation.getId(), Outcome.DECIDED, instant);
+        updateAssignmentHistory(history.getId(), Outcome.DECIDED, instant);
         return null;
     }
 
