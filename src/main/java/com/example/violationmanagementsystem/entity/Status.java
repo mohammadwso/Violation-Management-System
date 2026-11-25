@@ -33,6 +33,7 @@ public class Status {
             case ASSIGNED -> s.setId(2L);
             case APPROVED -> s.setId(3L);
             case REJECTED -> s.setId(4L);
+            case EXPIRED -> s.setId(5L);
         }
         return s;
     }

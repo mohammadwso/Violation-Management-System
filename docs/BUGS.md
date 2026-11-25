@@ -25,9 +25,9 @@ Compiles, but claim and accept are broken at runtime.
 
 - [x] `GetViolationResponse.assignedOperatorId` returns the history row id (`getCurrentAssignment().getId()`), should be `getCurrentAssignment().getOperator().getId()`
 - [x] Releasing old violations in `assignViolations` closes history and nulls the pointer but leaves status `ASSIGNED`; set it back to `NEW` or they are never picked up again
-- [ ] `acceptViolation` doesn't null `current_assignment_id` after `DECIDED`, doesn't set `decidedAt`, and isn't `@Transactional`
-- [ ] `Status.from` has no `EXPIRED` case → id `null` → NOT NULL violation on `status_id`
-- [ ] Ending an assignment (history row + pointer + status) is done differently in each caller; move it into one helper, e.g. `endCurrentAssignment(violation, outcome, newStatus, now)` used by release / accept / reject
+- [x] `acceptViolation` doesn't null `current_assignment_id` after `DECIDED`, doesn't set `decidedAt`, and isn't `@Transactional`
+- [x] `Status.from` has no `EXPIRED` case → id `null` → NOT NULL violation on `status_id`
+- [x] Ending an assignment (history row + pointer + status) is done differently in each caller; move it into one helper, e.g. `endCurrentAssignment(violation, outcome, newStatus, now)` used by release / accept / reject
 
 ### P2: cleanup
 

@@ -1,6 +1,7 @@
 package com.example.violationmanagementsystem.controller;
 
 import com.example.violationmanagementsystem.dto.request.CreateViolationRequest;
+import com.example.violationmanagementsystem.dto.request.DecideViolationRequest;
 import com.example.violationmanagementsystem.dto.request.ViolationImageRequest;
 import com.example.violationmanagementsystem.dto.response.ApiResponse;
 import com.example.violationmanagementsystem.dto.response.CreateViolationResponse;
@@ -63,27 +64,36 @@ public class ViolationsController {
     @PostMapping("/claim")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('OPERATOR')")
-    public ResponseEntity<?> claimViolations(@AuthenticationPrincipal AppUserDetails userDetails) {
-//        return violationService.getViolations(userDetails);
+    public ResponseEntity<?> claimViolations(
+            @AuthenticationPrincipal AppUserDetails userDetails) {
         return ApiResponse.getSuccessResponse(violationService.claimViolations(userDetails));
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> getViolation(@AuthenticationPrincipal AppUserDetails userDetails,
-                                          @PathVariable String id) {
-//        return violationService.getViolations(userDetails);
+    public ResponseEntity<?> getViolation(
+            @AuthenticationPrincipal AppUserDetails userDetails,
+            @PathVariable String id) {
         return ApiResponse.getSuccessResponse(violationService.getViolation(userDetails, id));
-
     }
 
     @PostMapping("/{id}/accept")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('OPERATOR')")
-    public ResponseEntity<?> acceptViolation(@AuthenticationPrincipal AppUserDetails userDetails,
-                                             @PathVariable String id) {
-//        return violationService.getViolations(userDetails);
-        return ApiResponse.getSuccessResponse(violationService.acceptViolation(id, userDetails));
+    public ResponseEntity<?> acceptViolation(
+            @AuthenticationPrincipal AppUserDetails userDetails,
+            @PathVariable String id) {
+        return ApiResponse.getSuccessResponse(violationService.decideViolation(id, userDetails, true, null));
 
+    }
+
+    @PostMapping("/{id}/reject")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('OPERATOR')")
+    public ResponseEntity<?> rejectViolation(
+            @AuthenticationPrincipal AppUserDetails userDetails,
+            @RequestBody(required = false) DecideViolationRequest request,
+            @PathVariable String id) {
+        return ApiResponse.getSuccessResponse(violationService.decideViolation(id, userDetails, false, request));
     }
 }

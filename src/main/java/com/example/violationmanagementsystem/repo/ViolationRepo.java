@@ -33,6 +33,6 @@ public interface ViolationRepo extends JpaRepository<Violation, Long> {
     @EntityGraph(attributePaths = {"violationNotes", "violationNotes.user", "violationNotes.user.role"})
     Optional<Violation> findByIdAndCurrentAssignmentOperatorId(Long id, Long assignedOperatorId);
     @EntityGraph(attributePaths = {"violationNotes", "violationNotes.user", "violationNotes.user.role"})
-    Optional<Violation> findFirstByCurrentAssignmentIsNullAndStatusIdOrderByUpdatedAtDateAsc(Long statusId);
+    Optional<Violation> findFirstByCurrentAssignmentIsNullAndStatusIdOrderByUpdatedAtAsc(Long statusId);
 
 }

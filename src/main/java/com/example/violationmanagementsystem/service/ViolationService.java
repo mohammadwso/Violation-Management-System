@@ -1,6 +1,7 @@
 package com.example.violationmanagementsystem.service;
 
 import com.example.violationmanagementsystem.dto.request.CreateViolationRequest;
+import com.example.violationmanagementsystem.dto.request.DecideViolationRequest;
 import com.example.violationmanagementsystem.dto.response.CreateViolationResponse;
 import com.example.violationmanagementsystem.dto.response.GetViolationResponse;
 
@@ -11,16 +12,13 @@ import com.example.violationmanagementsystem.enums.SourceCode;
 import com.example.violationmanagementsystem.enums.StatusCode;
 import com.example.violationmanagementsystem.enums.UserRole;
 import com.example.violationmanagementsystem.exception.BadRequestException;
-import com.example.violationmanagementsystem.exception.ErrorCode;
 import com.example.violationmanagementsystem.exception.ForbiddenException;
-import com.example.violationmanagementsystem.exception.base.AppException;
 import com.example.violationmanagementsystem.repo.*;
 import com.example.violationmanagementsystem.security.AppUserDetails;
 import jakarta.validation.constraints.Null;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -167,12 +165,11 @@ public class ViolationService {
     }
 
     @Transactional
-    public boolean claimViolations(AppUserDetails userDetails) {
-        assignViolations(userDetails.getId());
-        return true;
+    public Long claimViolations(AppUserDetails userDetails) {
+        return assignViolations(userDetails.getId());
     }
 
-    private boolean assignViolations(Long operatorId) {
+    private Long assignViolations(Long operatorId) {
         Instant newInstant = Instant.now();
         // Get Violations assigned to operator with status NEW
         List<Violation> violations = violationRepo.findByCurrentAssignmentOperatorIdAndStatusId(operatorId, Status.from(StatusCode.ASSIGNED).getId());
@@ -181,18 +178,18 @@ public class ViolationService {
 
         // Get Violations unassigned cases
         Optional<Violation> optionalViolation =
-                violationRepo.findFirstByCurrentAssignmentIsNullAndStatusIdOrderByUpdatedAtDateAsc(
+                violationRepo.findFirstByCurrentAssignmentIsNullAndStatusIdOrderByUpdatedAtAsc(
                         Status.from(StatusCode.NEW).getId());
         // Optional<Violation> findFirstByCurrentAssignmentIsNullAndStatusIdOrderByViolationDateAsc(Long statusId);
 
         if (optionalViolation.isEmpty()) {
             log.info("No Unassigned Cases");
-            return false;
+            return -1L;
         }
         Violation violation = optionalViolation.get();
         // Assigning the violation
         if (violation.getCurrentAssignment() != null) {
-            updateAssignmentHistory(violation.getCurrentAssignment().getId(), Outcome.RELEASED, newInstant);
+            endAssignmentHistory(violation.getCurrentAssignment().getId(), Outcome.RELEASED, newInstant);
             violation.setCurrentAssignment(null);
             violationRepo.save(violation);
         }
@@ -207,7 +204,7 @@ public class ViolationService {
         if (!violations.isEmpty()) {
             violations.forEach(oldViolation -> {
                 ViolationAssignmentHistory assignmentHistory = oldViolation.getCurrentAssignment();
-                updateAssignmentHistory(assignmentHistory.getId(), Outcome.RELEASED, newInstant);
+                endAssignmentHistory(assignmentHistory.getId(), Outcome.RELEASED, newInstant);
                 oldViolation.setCurrentAssignment(null);
                 oldViolation.setStatus(Status.from(StatusCode.NEW));
                 violationRepo.save(oldViolation);
@@ -220,7 +217,7 @@ public class ViolationService {
             });
         }
         log.info("Violation Assigned Successfully ");
-        return true;
+        return saved2Violation.getId();
     }
 
     public GetViolationResponse getViolation(AppUserDetails userDetails, String violationId) {
@@ -265,8 +262,8 @@ public class ViolationService {
 
     }
 
-    public Null acceptViolation(String id, AppUserDetails userDetails) {
-        // todo: fix
+    @Transactional
+    public Null decideViolation(String id, AppUserDetails userDetails, boolean approved, DecideViolationRequest operatorNotes) {
         Violation violation = getViolation(id);
         log.info("Violation: {}", violation);
         User user = getUser(userDetails);
@@ -279,34 +276,42 @@ public class ViolationService {
         }
         ViolationAssignmentHistory history = violation.getCurrentAssignment();
         if (history == null) {
-            throw new RuntimeException("some error");
+            if (!violation.getStatus().getCode().equals(Status.from(StatusCode.ASSIGNED))) {
+                throw new ForbiddenException("violation isn't assigned to you");
+            } else {
+                throw new ForbiddenException("violation isn't available for processing");
+            }
         }
 
         User assignedOperator = history.getOperator();
 
         if (assignedOperator == null || !Objects.equals(assignedOperator.getId(), user.getId())) {
             log.warn("User {} tried to process violation {} assigned to {}",
-                    user.getId(), violation.getId(),
-                    assignedOperator != null ? assignedOperator.getId() : null);
+                    user.getId(),
+                    violation.getId(),
+                    assignedOperator != null ? assignedOperator.getId() : null
+            );
             throw new ForbiddenException("This violation is not assigned to you");
         }
         if (!StatusCode.ASSIGNED.name().equals(violation.getStatus().getCode())) {
             throw new ForbiddenException("Violation Can't be processed");
         }
-        Status approved = statusRepo.findByCode(StatusCode.APPROVED.name())
-                .orElseThrow(() -> new RuntimeException("APPROVED status not found"));
-        violation.setStatus(approved);
+
+        Status decision = statusRepo.findByCode(approved ? StatusCode.APPROVED.name() : StatusCode.REJECTED.name())
+                .orElseThrow(() -> new RuntimeException("new status not found status not found"));
+        violation.setStatus(decision);
+
+        if (operatorNotes != null && operatorNotes.operatorNotes() != null) {
+            ViolationNote violationNote = new ViolationNote();
+            violationNote.setUser(user);
+            violationNote.setViolationNote(operatorNotes.operatorNotes());
+            violation.addNote(violationNote);
+        }
+
         violationRepo.save(violation);
-        updateAssignmentHistory(history.getId(), Outcome.DECIDED, instant);
+        endAssignmentHistory(history.getId(), Outcome.DECIDED, instant);
         return null;
     }
-
-//    public void addAssignmentHistory(Violation v, User user, Instant date) {
-//        // WIP
-//        ViolationAssignmentHistory history = new ViolationAssignmentHistory();
-//        history.setViolation(v);
-//        history.setAssignedAt(date == null ? v.getAssignedAt().toInstant() : date);
-//    }
 
     public ViolationAssignmentHistory addNewAssignmentHistory(Violation v, User user, Instant instant, StatusCode statusCode) {
         ViolationAssignmentHistory history = new ViolationAssignmentHistory();
@@ -316,7 +321,7 @@ public class ViolationService {
         return assignmentHistoryRepo.save(history);
     }
 
-    public void updateAssignmentHistory(Long id, Outcome outcome, Instant instant) {
+    public void endAssignmentHistory(Long id, Outcome outcome, Instant instant) {
         ViolationAssignmentHistory history = assignmentHistoryRepo.getById(id);
         history.setEndedAt(instant);
         history.setOutcome(outcome.name());
