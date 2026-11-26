@@ -4,7 +4,8 @@
 - [ ] GET /violations assigns violations as a side effect, move to `POST /violations/claim`
 - [ ] `GetViolationResponse` has no `id`
 - [ ] NPE in `GetViolationResponse.from` when a manual violation has no inspector
-- [ ] GET /violations returns 201 instead of 200
+- [ ] `POST /violations` returns 200 instead of 201 (`ApiResponse` always uses `HttpStatus.OK`, which overrides `@ResponseStatus`)
+- [ ] Image keys scoped by source code, not source id
 - [ ] `getViolations` fallback returns `findAll()` for any unknown role, no paging
 - [ ] `assignViolations` loads all unassigned rows, ignores status, queries twice
 - [ ] `@Data` on entities: `toString` loads lazy relations; `ManualViolation` equals ignores the parent class
