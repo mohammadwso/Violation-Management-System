@@ -276,7 +276,7 @@ public class ViolationService {
         }
         ViolationAssignmentHistory history = violation.getCurrentAssignment();
         if (history == null) {
-            if (!violation.getStatus().getCode().equals(Status.from(StatusCode.ASSIGNED))) {
+            if (violation.getStatus().getCode().equals(Status.from(StatusCode.ASSIGNED).getCode())) {
                 throw new ForbiddenException("violation isn't assigned to you");
             } else {
                 throw new ForbiddenException("violation isn't available for processing");
